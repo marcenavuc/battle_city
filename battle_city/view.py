@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pygame
 
-from battle_city.config import CELL_SIZE
+from battle_city.config import CELL_SIZE, CELL_WIDTH, CELL_HEIGHT
 from battle_city import Level, GameObject
 
 
@@ -40,8 +40,10 @@ class Display:
 
     def _show_game_obj(self, game_obj: GameObject):
         if game_obj.image:
+            position = game_obj.position[0] * CELL_WIDTH,\
+                       game_obj.position[1] * CELL_HEIGHT
             img = pygame.transform.scale(game_obj.image, CELL_SIZE)
-            self.screen.blit(img, game_obj.position)
+            self.screen.blit(img, position)
 
     def main_screen(self):
         self.screen.fill(pygame.Color("black"))

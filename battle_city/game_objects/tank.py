@@ -25,10 +25,9 @@ class Tank(GameObject):
         self.direction = self.direction.previous()
 
     def go_forward(self) -> Tuple[int, int]:
-        return (self.position[0] + self.direction.value[0] * CELL_WIDTH,
-                self.position[1] - self.direction.value[1] * CELL_HEIGHT)
+        return (self.position[0] + self.direction.value[0],
+                self.position[1] - self.direction.value[1])
 
     def go_back(self) -> Tuple[int, int]:
-        return (self.position[0] - self.direction.value[0] * CELL_WIDTH,
-                self.position[1] + self.direction.value[1] * CELL_HEIGHT)
-
+        return (self.position[0] - self.direction.value[0],
+                self.position[1] + self.direction.value[1])

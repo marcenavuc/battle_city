@@ -39,7 +39,7 @@ class LevelsRepository(Sequence):
 
         for y, line in enumerate(txt):
             for x, symbol in enumerate(line.strip()):
-                game_map[(x, y)] = self._get_from_symbol(symbol, ((x * CELL_WIDTH, y * CELL_HEIGHT)))
+                game_map[(x, y)] = self._get_from_symbol(symbol, (x, y))
 
         return Level(game_map)
 

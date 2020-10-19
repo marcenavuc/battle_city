@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pygame
 
 from battle_city.game_objects import Tank, Wall
@@ -18,8 +20,15 @@ class Player(Tank):
             self.go_left()
         if event.key == pygame.K_UP or event.key == pygame.K_w:
             new_position = self.go_forward()
-            print(new_position, level[new_position])
-            if not isinstance(level[new_position], Wall):
-                self.position = new_position
+            self.position = self.set_position(new_position, level)
         if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-            self.position = self.go_back()
+            new_position = self.go_back()
+            self.position = self.set_position(new_position, level)
+
+    def set_position(self, position: Tuple[int, int], level) \
+            -> Tuple[int, int]:
+        if not isinstance(level[position], Wall) \
+                and 0 <= position[0] <= level.max_x \
+                and 0 <= position[1] <= level.max_y:
+            return position
+        return self.position
