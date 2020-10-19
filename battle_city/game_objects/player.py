@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pygame
 
-from battle_city.game_objects import Tank, Wall
+from battle_city.game_objects import Tank
 from battle_city.game_objects import Directions
 
 
@@ -24,11 +24,5 @@ class Player(Tank):
         if event.key == pygame.K_DOWN or event.key == pygame.K_s:
             new_position = self.go_back()
             self.position = self.set_position(new_position, level)
-
-    def set_position(self, position: Tuple[int, int], level) \
-            -> Tuple[int, int]:
-        if not isinstance(level[position], Wall) \
-                and 0 <= position[0] <= level.max_x \
-                and 0 <= position[1] <= level.max_y:
-            return position
-        return self.position
+        if event.key == pygame.K_SPACE:
+            self.shot(level)

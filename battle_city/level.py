@@ -2,8 +2,7 @@ from collections.abc import Sequence, Iterable
 from typing import Dict, Tuple, Iterator
 import os
 
-from battle_city.config import CELL_WIDTH, CELL_HEIGHT
-from battle_city.game_objects import GameObject, Player, Wall, Tank
+from battle_city.game_objects import GameObject, Tank, Player, Wall
 
 
 class LevelsRepository(Sequence):
@@ -58,13 +57,21 @@ class Level(Iterable):
         self.game_map = game_map
         self.max_x = max(game_map.keys(), key=lambda t: t[0])[0]
         self.max_y = max(game_map.keys(), key=lambda t: t[1])[1]
+        self._updated = []
 
-    def __getitem__(self, key: Tuple[int, int]):
+    def __getitem__(self, key: Tuple[int, int]) -> GameObject:
         return self.game_map.get(key)
+
+    def __setitem__(self, key: Tuple[int, int], value: GameObject):
+        self._updated.append(key)
+        self.game_map[key] = value
 
     def __iter__(self) -> Iterator[Tuple[int, int]]:
         return iter(self.game_map.keys())
 
     def update(self):
-        pass
-
+        for key in self._updated:
+            obj_pos = self.game_map[key].position
+            if obj_pos != key:
+                self.game_map[obj_pos] = self.game_map[key]
+                self.game_map[key] = GameObject(key)
