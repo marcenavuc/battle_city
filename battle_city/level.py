@@ -70,8 +70,9 @@ class Level(Iterable):
         return iter(self.game_map.keys())
 
     def update(self):
-        for key in self._updated:
+        for key in self.game_map:
             obj_pos = self.game_map[key].position
             if obj_pos != key:
                 self.game_map[obj_pos] = self.game_map[key]
                 self.game_map[key] = GameObject(key)
+

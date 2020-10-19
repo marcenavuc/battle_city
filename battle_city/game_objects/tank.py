@@ -12,9 +12,12 @@ class Tank(GameObject):
         super().__init__(*args, **kwars)
         self.image = pygame.image.load("battle_city/media/images/enemy.png")
         self.direction = Directions.DOWN
+        self.is_shot = True
 
     def on_event(self, event: pygame.event, level):
-        self.shot(level)
+        if self.is_shot:
+            self.shot(level)
+        self.is_shot = False
 
     def go_right(self):
         self.image = pygame.transform.rotate(self.image, 270)
@@ -41,5 +44,6 @@ class Tank(GameObject):
         return self.position
 
     def shot(self, level):
-        missile_position = self.go_forward()
-        level[missile_position] = Missile(self.direction, missile_position)
+        missile_position = self.set_position(self.go_forward(), level)
+        if missile_position != self.position:
+            level[missile_position] = Missile(self.direction, missile_position)

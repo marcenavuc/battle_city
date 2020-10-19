@@ -26,7 +26,7 @@ class Missile(GameObject):
         new_position = self.go_forward()
         if self.can_fly(new_position, level):
             self.position = new_position
-        elif isinstance(level[new_position], Wall):
+        elif level[new_position].__class__ != GameObject:
             level[new_position] = GameObject(new_position)
             level[self.position] = GameObject(self.position)
         else:
@@ -38,5 +38,5 @@ class Missile(GameObject):
 
     def can_fly(self, position: Tuple[int, int], level) -> bool:
         return not isinstance(level[position], Wall) \
-                and 0 <= position[0] <= level.max_x \
-                and 0 <= position[1] <= level.max_y
+                and 0 < position[0] <= level.max_x \
+                and 0 < position[1] <= level.max_y
