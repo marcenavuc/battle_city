@@ -5,6 +5,10 @@ import pygame
 from battle_city.config import CELL_SIZE, CELL_WIDTH, CELL_HEIGHT
 from battle_city import Level, GameObject
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Button:
 
@@ -27,6 +31,7 @@ class Display:
         self.screen = screen
         self.width, self.height = self.screen.get_size()
         self.font = font
+        logger.debug("Display was created")
 
     def _message_to_screen(self, text: str, color,
                            position: Tuple[float, float])\
@@ -56,6 +61,9 @@ class Display:
                                                      pygame.Color("red"),
                                                      (self.width / 2,
                                                       self.height / 2))[1])
+        if play_button.is_clicked():
+            logger.debug("Main screen was ended")
+
         return not play_button.is_clicked()
 
     def game_screen(self, level: Level, event: pygame.event):
@@ -63,8 +71,10 @@ class Display:
 
         for position in level:
             pygame.time.delay(5)
-            if event.type == pygame.KEYDOWN:
-                level[position].on_event(event, level)
+            level[position].on_event(event, level)
+            self._show_game_obj(level[position])
+
+        for position in level.updated:
             self._show_game_obj(level[position])
 
         level.update()

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 CELL_WIDTH = 13 * 4
 CELL_HEIGHT = 13 * 4
 CELL_SIZE = (CELL_WIDTH, CELL_HEIGHT)
@@ -6,3 +8,5 @@ DISPLAY_WIDTH = 500
 DISPLAY_HEIGHT = 500
 DISPLAY_SIZE = (DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
+# typing
+Coords = Tuple[int, int]

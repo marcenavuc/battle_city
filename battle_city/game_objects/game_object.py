@@ -2,15 +2,16 @@ import pygame
 from typing import Tuple
 from enum import Enum
 
+from battle_city.config import Coords
+
 
 class GameObject:
 
-    def __init__(self, position: Tuple[float, float]):
+    def __init__(self, position: Coords):
         self.position = position
         self.image = None
 
     def draw(self, screen: pygame.display) -> None:
-
         if self.image and self.position:
             screen.blit(self.image, self.position)
 
@@ -19,6 +20,11 @@ class GameObject:
 
     def on_event(self, event: pygame.event, level):
         pass
+
+    @staticmethod
+    def in_borders(position: Coords, level):
+        return 0 <= position[0] <= level.max_x \
+               and 0 <= position[1] <= level.max_y
 
 
 class Directions(Enum):
