@@ -1,5 +1,5 @@
 from collections.abc import Sequence, Iterable
-from typing import Dict, Tuple, Iterator
+from typing import Dict, Tuple, Iterator, List
 import os
 
 from battle_city.config import Coords
@@ -38,16 +38,20 @@ class LevelsRepository(Sequence):
 
     def load_level(self, num: int) -> "Level":
         path = self.levels[num]
-        game_map = {}
         with open(path) as file:
-            txt = file.readlines()
-
-        for y, line in enumerate(txt):
-            for x, symbol in enumerate(line.strip()):
-                game_map[(x, y)] = self._get_from_symbol(symbol, (x, y))
+            lines = file.readlines()
 
         logger.debug(f"loaded level {num}")
-        return Level(game_map)
+        return Level(self._parse_to_map(lines))
+
+    @staticmethod
+    def _parse_to_map(lines: List[str]) -> Dict[Coords, GameObject]:
+        game_map = {}
+        for y, line in enumerate(lines):
+            for x, symbol in enumerate(line.strip()):
+                game_map[(x, y)] = LevelsRepository._get_from_symbol(symbol, (x, y))
+
+        return game_map
 
     @staticmethod
     def _listdir_fullpath(path: str) -> list:
