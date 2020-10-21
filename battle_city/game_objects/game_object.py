@@ -22,7 +22,7 @@ class GameObject:
         pass
 
     @staticmethod
-    def in_borders(position: Coords, level):
+    def in_borders(position: Coords, level) -> bool:
         return 0 <= position[0] <= level.max_x \
                and 0 <= position[1] <= level.max_y
 

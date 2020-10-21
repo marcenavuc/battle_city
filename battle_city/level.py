@@ -71,8 +71,9 @@ class Level(Iterable):
         return self.game_map.get(key)
 
     def __setitem__(self, key: Coords, value: GameObject):
-        self.updated.append(key)
-        self.game_map[key] = value
+        if key in self.game_map:
+            self.updated.append(key)
+            self.game_map[key] = value
 
     def __iter__(self) -> Iterator[Coords]:
         return iter(self.game_map.keys())
@@ -88,5 +89,3 @@ class Level(Iterable):
         if position in self.game_map:
             logger.debug(f"Del obj:{self.game_map[position]} pos:{position}")
             self.game_map[position] = GameObject(position)
-
-
