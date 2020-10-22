@@ -1,0 +1,11 @@
+language: python
+python:
+  - "3.6"
+
+install: "pip install -r requirements-dev.txt"
+
+script:
+  - "python3.6 -m coverage run -m pytest"
+
+after_success:
+  - codecov
