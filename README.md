@@ -17,6 +17,21 @@
 2) Установите зависимости
 `pip install -r requirements.txt`
 
+## Установить как пакет
+1) Установите setuptools, wheel
+```bash
+$ python3 -m pip install setuptools wheel
+```
+2) Соберите исходный код для установки
+```bash
+$ python3 setup.py sdist bdist_wheel
+```
+3) Соберите исходники и установите пакет
+```bash
+$ python3 setup.py build
+$ python3 setup.py install
+```
+
 ## Состав
 * Настройки: **battle_city/config.py**
 * Имплементация уровня: **battle_city/level.py**
