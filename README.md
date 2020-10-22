@@ -1,4 +1,5 @@
 # Battle city
+[![Build Status](https://travis-ci.com/marcenavuc/battle_city.svg?branch=main)](https://travis-ci.com/marcenavuc/battle_city)
 
 Автор: Аверченко Марк (https://vk.com/markenus)
 
