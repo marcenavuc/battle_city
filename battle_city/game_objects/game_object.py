@@ -1,5 +1,4 @@
 import pygame
-from typing import Tuple
 from enum import Enum
 
 from battle_city.config import Coords

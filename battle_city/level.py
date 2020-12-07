@@ -1,5 +1,5 @@
-from collections.abc import Sequence, Iterable
-from typing import Dict, Tuple, Iterator, List
+from collections.abc import Sequence
+from typing import Dict, Iterator, List
 import os
 
 from battle_city.config import Coords
@@ -62,7 +62,7 @@ class LevelsRepository(Sequence):
         return LevelsRepository.CHAR_MAP[s](position)
 
 
-class Level(Iterable):
+class Level:
 
     def __init__(self, game_map: Dict[Coords, GameObject]):
         self.game_map = game_map
