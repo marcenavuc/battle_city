@@ -31,10 +31,18 @@ class Empty(GameObject):
 
 
 class Directions(Enum):
-    UP = Vector(0, 1)
+    UP = Vector(0, -1)
     RIGHT = Vector(1, 0)
-    DOWN = Vector(0, -1)
+    DOWN = Vector(0, 1)
     LEFT = Vector(-1, 0)
+
+    def get_angle(self):
+        return {
+            "UP": 0,
+            "RIGHT": -90,
+            "LEFT": 90,
+            "DOWN": 180,
+        }.get(self.name)
 
     def rotate_right(self):
         return {
@@ -51,3 +59,15 @@ class Directions(Enum):
             "LEFT": self.DOWN,
             "UP": self.LEFT,
         }.get(self.name)
+
+
+class Movable(GameObject):
+
+    def __init__(self, *args, **kwargs):
+        super(Movable, self).__init__(*args, **kwargs)
+        self.speed = 0
+        self.direction = Directions.UP
+
+    def move(self, direction: Directions):
+        self.direction = direction
+        return self.position + direction.value * self.speed

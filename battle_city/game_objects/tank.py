@@ -9,40 +9,22 @@ class Tank(GameObject):
 
     def __init__(self, *args, **kwars):
         super().__init__(*args, **kwars)
-        self.image = pygame.image.load("battle_city/media/images/enemy.png")
+        self.sprite = pygame.image.load("battle_city/media/images/enemy.png")
         self.direction = Directions.DOWN
+        self.image = pygame.transform.rotate(self.sprite, 0)
         self.is_shot = True
         self.speed = 5
 
     def on_event(self, event: pygame.event, level):
-        if self.is_shot:
-            self.shot(level)
+        # if self.is_shot:
+        #     self.shot(level)
         self.is_shot = False
 
-    def go_right(self):
-        self.image = pygame.transform.rotate(self.image, 270)
-        self.direction = self.direction.rotate_right()
-
-    def go_left(self):
-        self.image = pygame.transform.rotate(self.image, 90)
-        self.direction = self.direction.rotate_left()
-
-    def go_forward(self) -> Vector:
-        return Vector(self.position[0] + self.direction.value[0] * self.speed,
-                      self.position[1] - self.direction.value[1] * self.speed)
-
-    def go_back(self) -> Vector:
-        return Vector(self.position[0] - self.direction.value[0] * self.speed,
-                      self.position[1] + self.direction.value[1] * self.speed)
-
-    def move_up(self) -> Vector:
-        self.direction = Directions.UP
-        # return Vector(self.position[0] + Directions.DOWN.value[0],
-        #               self.position[1] + Directions.DOWN.value[1])
-        return self.position + Directions.UP
-
     def move(self, direction: Directions):
-        self.direction = direction
+        if self.direction != direction:
+            angle = direction.get_angle()
+            self.image = pygame.transform.rotate(self.sprite, angle)
+            self.direction = direction
         return self.position + direction.value * self.speed
 
     def set_position(self, position: Vector, level) -> Vector:

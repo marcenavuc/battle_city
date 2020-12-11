@@ -71,10 +71,7 @@ class Display:
         self.screen.fill(pygame.Color("black"))
 
         for position in level:
-            pygame.time.delay(5)
             level[position].on_event(event, level)
             self._show_game_obj(level[position])
-
-        # level.update()
 
         return True
