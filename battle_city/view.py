@@ -45,8 +45,9 @@ class Display:
 
     def _show_game_obj(self, game_obj: GameObject):
         if game_obj.image:
-            position = game_obj.position[0] * CELL_WIDTH,\
-                       game_obj.position[1] * CELL_HEIGHT
+            # position = game_obj.position[0] * CELL_WIDTH,\
+            #            game_obj.position[1] * CELL_HEIGHT
+            position = game_obj.position
             img = pygame.transform.scale(game_obj.image, CELL_SIZE)
             self.screen.blit(img, position)
 
@@ -74,9 +75,6 @@ class Display:
             level[position].on_event(event, level)
             self._show_game_obj(level[position])
 
-        for position in level.updated:
-            self._show_game_obj(level[position])
-
-        level.update()
+        # level.update()
 
         return True

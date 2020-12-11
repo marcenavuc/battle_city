@@ -13,7 +13,7 @@ from battle_city.level import LevelsRepository, Level
 def test_level_repository_init(path, result):
     try:
         levels_repository = LevelsRepository(path)
-        assert levels_repository.levels == result
+        assert levels_repository.levels_paths == result
     except Exception as e:
         assert isinstance(e, AssertionError)
 

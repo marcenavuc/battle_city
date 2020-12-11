@@ -1,12 +1,12 @@
 import pygame
 from enum import Enum
 
-from battle_city.config import Coords
+from battle_city.utils import Vector
 
 
 class GameObject:
 
-    def __init__(self, position: Coords):
+    def __init__(self, position: Vector):
         self.position = position
         self.image = None
 
@@ -21,18 +21,22 @@ class GameObject:
         pass
 
     @staticmethod
-    def in_borders(position: Coords, level) -> bool:
+    def in_borders(position: Vector, level) -> bool:
         return 0 <= position[0] <= level.max_x \
                and 0 <= position[1] <= level.max_y
 
 
-class Directions(Enum):
-    UP = (0, 1)
-    RIGHT = (1, 0)
-    DOWN = (0, -1)
-    LEFT = (-1, 0)
+class Empty(GameObject):
+    pass
 
-    def next(self):
+
+class Directions(Enum):
+    UP = Vector(0, 1)
+    RIGHT = Vector(1, 0)
+    DOWN = Vector(0, -1)
+    LEFT = Vector(-1, 0)
+
+    def rotate_right(self):
         return {
             "UP": self.RIGHT,
             "RIGHT": self.DOWN,
@@ -40,7 +44,7 @@ class Directions(Enum):
             "LEFT": self.UP,
         }.get(self.name)
 
-    def previous(self):
+    def rotate_left(self):
         return {
             "RIGHT": self.UP,
             "DOWN": self.RIGHT,

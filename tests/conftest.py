@@ -33,10 +33,10 @@ def hard_level():
 
 
 def is_same_levels(level1, level2):
-    if level1.game_map.keys() != level2.game_map.keys():
+    if level1.game_env.keys() != level2.game_env.keys():
         return False
 
-    for key in level1.game_map:
+    for key in level1.game_env:
         if type(level1[key]) != type(level2[key]):
             print(key)
             print(type(level1[key]), type(level2[key]))

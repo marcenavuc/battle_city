@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pygame
 
-from battle_city.config import Coords
+from battle_city.utils import Vector
 from battle_city.game_objects import Wall
 from battle_city.game_objects.game_object import GameObject, Directions
 
@@ -39,10 +39,10 @@ class Missile(GameObject):
         else:
             level.remove(self.position)
 
-    def go_forward(self) -> Coords:
-        return (self.position[0] + self.direction.value[0],
-                self.position[1] - self.direction.value[1])
+    def go_forward(self) -> Vector:
+        return Vector(self.position[0] + self.direction.value[0],
+                      self.position[1] - self.direction.value[1])
 
-    def can_fly(self, position: Coords, level) -> bool:
+    def can_fly(self, position: Vector, level) -> bool:
         return not isinstance(level[position], Wall) \
                and self.in_borders(position, level)

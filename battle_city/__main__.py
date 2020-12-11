@@ -49,6 +49,7 @@ while True:
     if is_start:
         is_start = display.main_screen()
     elif is_game:
+        # levels_repository[current_level].update_gameobjs(event)
         is_game = display.game_screen(levels_repository[current_level], event)
 
     pygame.display.update()
