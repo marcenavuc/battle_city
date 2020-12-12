@@ -1,11 +1,11 @@
 from collections.abc import Sequence
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Tuple
 import os
 import logging
 
-import pygame
+from pygame.sprite import Sprite, Group
 
-from battle_city.config import CELL_WIDTH, CELL_HEIGHT
+from battle_city.config import CELL_WIDTH, CELL_HEIGHT, WALL_SPRITE
 from battle_city.utils import Vector
 from battle_city.game_objects import GameObject, Empty, Tank, Player, Wall
 
@@ -14,13 +14,11 @@ logger = logging.getLogger(__name__)
 
 class LevelsRepository(Sequence):
     CHAR_MAP = {
-        ".": Empty,
+        # ".": Empty,
         "W": Wall,
         "T": Tank,
         "P": Player,
     }
-
-    CHAR_OBJ = ["T", "P"]
 
     def __init__(self, levels_dir: str):
         self.current_num_of_level = 0
@@ -46,24 +44,21 @@ class LevelsRepository(Sequence):
             lines = file.readlines()
 
         logger.debug(f"loaded level {num}")
-        return Level(self._parse_to_map(lines))
+        return Level(*self._parse_to_map(lines))
 
     @staticmethod
-    def _parse_to_map(lines: List[str]) -> Dict[Vector, GameObject]:
-        # game_objs = []  # Игровые объекты (Танки)
-        # game_env = {}  # Окружение (Стенки)
-        game_env = {}
+    def _parse_to_map(lines: List[str]) -> Tuple[dict, int, int]:
+        groups = {group_type: Group() for group_type in LevelsRepository.CHAR_MAP}
+        # game_env = {}
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
                 position = Vector(x * CELL_WIDTH, y * CELL_HEIGHT)
-                obj = LevelsRepository._get_from_symbol(symbol, position)
-                game_env[position] = obj
-                # game_env[(x, y)] = obj
-                # if symbol in LevelsRepository.CHAR_OBJ:
-                #     game_objs.append(obj)
+                game_obj = LevelsRepository._get_from_symbol(symbol, position)
+                if game_obj is None:
+                    continue
+                groups[symbol].add(game_obj)
 
-        # return game_env, game_objs
-        return game_env
+        return groups, x, y
 
     @staticmethod
     def _listdir_fullpath(path: str) -> list:
@@ -71,43 +66,32 @@ class LevelsRepository(Sequence):
 
     @staticmethod
     def _get_from_symbol(key: str, position: Vector) -> GameObject:
-        return LevelsRepository.CHAR_MAP[key](position)
+        obj = LevelsRepository.CHAR_MAP.get(key)
+        return None if obj is None else obj(position)
 
 
 class Level:
 
-    def __init__(self, game_env: Dict[Vector, GameObject],
-                 # game_objs: List[GameObject]):
-                 ):
-        self.game_env = game_env
-        # self.game_objs = game_objs
-        self.max_x = max(game_env.keys(), key=lambda t: t[0])[0]
-        self.max_y = max(game_env.keys(), key=lambda t: t[1])[1]
-
+    def __init__(self, groups: Dict[str, Group], max_x: int, max_y: int):
+        # self.game_env = game_env
+        # self.max_x = max(game_env.keys(), key=lambda t: t[0])[0]
+        # self.max_y = max(game_env.keys(), key=lambda t: t[1])[1]
+        self.groups = groups
+        self.max_x = max_x * CELL_WIDTH
+        self.max_y = max_y * CELL_HEIGHT
         logger.debug("Level was created")
 
-    def __getitem__(self, key: Vector) -> GameObject:
-        return self.game_env.get(key)
+    def __getitem__(self, group_name: str) -> GameObject:
+        return self.groups.get(group_name)
 
-    def __setitem__(self, key: Vector, value: GameObject):
-        if key in self.game_env:
-            self.game_env[key] = value
+    # def __setitem__(self, key: Vector, value: GameObject):
+    #     if key in self.game_env:
+    #         self.game_env[key] = value
 
-    def __iter__(self) -> Iterator[Vector]:
-        return iter(self.game_env.keys())
+    def __iter__(self) -> List[Group]:
+        return iter(self.groups.values())
 
-    def update(self):
-        for key in self.game_env:
-            obj_pos = self.game_env[key].position
-            if obj_pos != key:
-                self.game_env[obj_pos] = self.game_env[key]
-                self.game_env[key] = GameObject(key)
-
-    # def update_gameobjs(self, event):
-    #     for game_obj in self.game_objs:
-    #         game_obj.on_event(event, self)
-
-    def remove(self, position: Vector):
-        if position in self.game_env:
-            logger.debug(f"Del obj:{self.game_env[position]} pos:{position}")
-            self.game_env[position] = GameObject(position)
+    # def remove(self, position: Vector):
+    #     if position in self.game_env:
+    #         logger.debug(f"Del obj:{self.game_env[position]} pos:{position}")
+    #         self.game_env[position] = GameObject(position)

@@ -1,29 +1,25 @@
 import pygame
 from enum import Enum
-
+#  https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite
+from pygame.sprite import DirtySprite
 from battle_city.utils import Vector
+from battle_city.config import CELL_SIZE
 
 
-class GameObject:
+class GameObject(DirtySprite):
 
-    def __init__(self, position: Vector):
+    def __init__(self, position: Vector, *groups):
+        super().__init__(*groups)
         self.position = position
         self.image = None
 
-    def draw(self, screen: pygame.display) -> None:
-        if self.image and self.position:
-            screen.blit(self.image, self.position)
-
-    def is_collided_with(self, obj: pygame.rect) -> bool:
-        return self.image.get_rect().colliderect(obj)
-
-    def on_event(self, event: pygame.event, level):
+    def update(self, event: pygame.event, level, *args):
         pass
 
     @staticmethod
-    def in_borders(position: Vector, level) -> bool:
-        return 0 <= position[0] <= level.max_x \
-               and 0 <= position[1] <= level.max_y
+    def in_borders(position: pygame.rect.Rect, level) -> bool:
+        return 0 <= position.x <= level.max_x \
+               and 0 <= position.y <= level.max_y
 
 
 class Empty(GameObject):
@@ -71,3 +67,21 @@ class Movable(GameObject):
     def move(self, direction: Directions):
         self.direction = direction
         return self.position + direction.value * self.speed
+
+
+class Movable(GameObject):
+
+    def __init__(self, *args, **kwargs):
+        super(Movable, self).__init__(*args, **kwargs)
+        self.sprite = None
+        self.speed = 0
+        self.direction = Directions.UP
+
+    def move(self, direction: Directions) -> pygame.rect.Rect:
+        if self.direction != direction:
+            angle = direction.get_angle()
+            self.image = pygame.transform.rotate(self.sprite, angle)
+            # self.image = pygame.transform.scale(self.sprite, CELL_SIZE)
+            self.direction = direction
+        step = direction.value * self.speed
+        return self.rect.move(*step)

@@ -1,17 +1,23 @@
 import pygame
 
+from battle_city.config import CELL_SIZE
 from battle_city.utils import Vector
 from battle_city.game_objects import Wall, Missile
-from battle_city.game_objects.game_object import GameObject, Directions
+from battle_city.game_objects.game_object import Directions, Movable
 
 
-class Tank(GameObject):
+class Tank(Movable):
 
-    def __init__(self, *args, **kwars):
-        super().__init__(*args, **kwars)
+    def __init__(self, position, *args, **kwars):
+        super().__init__(position, *args, **kwars)
         self.sprite = pygame.image.load("battle_city/media/images/enemy.png")
-        self.direction = Directions.DOWN
+        self.sprite = pygame.transform.scale(self.sprite, CELL_SIZE)
         self.image = pygame.transform.rotate(self.sprite, 0)
+
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = position.x, position.y
+        self.direction = Directions.DOWN
+
         self.is_shot = True
         self.speed = 5
 
@@ -20,20 +26,14 @@ class Tank(GameObject):
         #     self.shot(level)
         self.is_shot = False
 
-    def move(self, direction: Directions):
-        if self.direction != direction:
-            angle = direction.get_angle()
-            self.image = pygame.transform.rotate(self.sprite, angle)
-            self.direction = direction
-        return self.position + direction.value * self.speed
-
-    def set_position(self, position: Vector, level) -> Vector:
-        if not isinstance(level[position], Wall) \
-                and self.in_borders(position, level):
+    def set_position(self, position: pygame.rect.Rect, level) -> pygame.rect.Rect:
+        print(position)
+        if self.in_borders(position, level) and \
+                position.collidelist(level['W'].sprites()) < 1:
             return position
-        return self.position
+        return self.rect
 
     def shot(self, level):
-        missile_position = self.set_position(self.go_forward(), level)
+        missile_position = self.set_position(self.move(self.direction), level)
         if missile_position != self.position:
             level[missile_position] = Missile(self.direction, missile_position)

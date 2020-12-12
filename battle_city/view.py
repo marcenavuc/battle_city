@@ -70,8 +70,11 @@ class Display:
     def game_screen(self, level: Level, event: pygame.event):
         self.screen.fill(pygame.Color("black"))
 
-        for position in level:
-            level[position].on_event(event, level)
-            self._show_game_obj(level[position])
+        # for position in level:
+        #     level[position].on_event(event, level)
+        #     self._show_game_obj(level[position])
+        for game_group in level:
+            game_group.update(event, level)
+            game_group.draw(self.screen)
 
         return True

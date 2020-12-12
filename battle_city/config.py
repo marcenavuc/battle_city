@@ -1,8 +1,8 @@
-from typing import Tuple
-
 # Main Parameters
 FONT_PATH = "media/battle_font.ttf"
 LEVELS_PATH = "media/levels"
+TANK_SPRITE = "battle_city/media/images/enemy.png"
+WALL_SPRITE = "battle_city/media/images/wall.png"
 
 # GAME Parameters
 FONT_SIZE = 30
