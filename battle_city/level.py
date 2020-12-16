@@ -1,23 +1,29 @@
 from collections.abc import Sequence
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, List, Tuple
 import os
 import logging
 
 from pygame.sprite import Sprite, Group
 
-from battle_city.config import CELL_WIDTH, CELL_HEIGHT, WALL_SPRITE
+from battle_city.config import CELL_WIDTH, CELL_HEIGHT
+from battle_city.game_objects.blocks import wall_generator, Leaves, Water, Iron, \
+    Base
 from battle_city.utils import Vector
-from battle_city.game_objects import GameObject, Empty, Tank, Player, Wall
+from battle_city.game_objects import GameObject, Tank, Player, Missile
 
 logger = logging.getLogger(__name__)
 
 
 class LevelsRepository(Sequence):
     CHAR_MAP = {
-        # ".": Empty,
-        "W": Wall,
+        "W": wall_generator,
+        "A": Water,
+        "I": Iron,
+        "B": Base,
         "T": Tank,
         "P": Player,
+        "M": Missile,
+        "L": Leaves,
     }
 
     def __init__(self, levels_dir: str):
@@ -81,7 +87,7 @@ class Level:
         self.max_y = max_y * CELL_HEIGHT
         logger.debug("Level was created")
 
-    def __getitem__(self, group_name: str) -> GameObject:
+    def __getitem__(self, group_name: str) -> Group:
         return self.groups.get(group_name)
 
     # def __setitem__(self, key: Vector, value: GameObject):

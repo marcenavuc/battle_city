@@ -22,10 +22,6 @@ class GameObject(DirtySprite):
                and 0 <= position.y <= level.max_y
 
 
-class Empty(GameObject):
-    pass
-
-
 class Directions(Enum):
     UP = Vector(0, -1)
     RIGHT = Vector(1, 0)
@@ -61,18 +57,6 @@ class Movable(GameObject):
 
     def __init__(self, *args, **kwargs):
         super(Movable, self).__init__(*args, **kwargs)
-        self.speed = 0
-        self.direction = Directions.UP
-
-    def move(self, direction: Directions):
-        self.direction = direction
-        return self.position + direction.value * self.speed
-
-
-class Movable(GameObject):
-
-    def __init__(self, *args, **kwargs):
-        super(Movable, self).__init__(*args, **kwargs)
         self.sprite = None
         self.speed = 0
         self.direction = Directions.UP
@@ -81,7 +65,6 @@ class Movable(GameObject):
         if self.direction != direction:
             angle = direction.get_angle()
             self.image = pygame.transform.rotate(self.sprite, angle)
-            # self.image = pygame.transform.scale(self.sprite, CELL_SIZE)
             self.direction = direction
         step = direction.value * self.speed
         return self.rect.move(*step)

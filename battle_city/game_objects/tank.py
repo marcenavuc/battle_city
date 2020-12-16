@@ -1,3 +1,5 @@
+import time
+
 import pygame
 
 from battle_city.config import CELL_SIZE
@@ -27,13 +29,15 @@ class Tank(Movable):
         self.is_shot = False
 
     def set_position(self, position: pygame.rect.Rect, level) -> pygame.rect.Rect:
-        print(position)
         if self.in_borders(position, level) and \
-                position.collidelist(level['W'].sprites()) < 1:
+                position.collidelist(level['W'].sprites()) < 0 and \
+                position.collidelist(level['A'].sprites()) < 0 and \
+                position.collidelist(level['I'].sprites()):
             return position
         return self.rect
 
     def shot(self, level):
         missile_position = self.set_position(self.move(self.direction), level)
-        if missile_position != self.position:
-            level[missile_position] = Missile(self.direction, missile_position)
+        if self.is_shot and missile_position != self.rect:
+            level.groups["M"].add(Missile(self.direction, missile_position))
+            # level[missile_position] = Missile(self.direction, missile_position)
