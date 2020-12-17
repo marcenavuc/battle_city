@@ -1,9 +1,7 @@
 import pygame
 
 from battle_city.config import CELL_SIZE
-from battle_city.utils import Vector
-from battle_city.game_objects import Wall
-from battle_city.game_objects.game_object import GameObject, Directions, Movable
+from battle_city.game_objects.game_object import Directions, Movable
 
 import logging
 
@@ -11,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class Missile(Movable):
+    image = "battle_city/media/images/missile.png"
 
     def __init__(self, direction: Directions, position, *args, **kwargs):
         super().__init__(position, *args, **kwargs)
@@ -27,27 +26,21 @@ class Missile(Movable):
         {position} with direction {self.direction}")
 
     def update(self, event: pygame.event, level, *args):
-        # new_position = self.go_forward()
-        # if self.can_fly(new_position, level):
-        #     self.position = new_position
-        # elif level[new_position].__class__ != GameObject:  # Врезались во что-то
-        #     level.remove(self.position)
-        #     level.remove(new_position)
-        # else:
-        #     level.remove(self.position)
         new_position = self.move(self.direction)
         wall_index = new_position.collidelist(level['W'].sprites())
         iron_index = new_position.collidelist(level['I'].sprites())
+        player_index = new_position.collidelist(level['P'].sprites())
+        tank_index = new_position.collidelist(level['T'].sprites())
+        if player_index >= 0:
+            level['P'].sprites()[player_index].kill()
+            self.kill()
+        if tank_index >= 0:
+            level['T'].sprites()[tank_index].kill()
+            self.kill()
         if wall_index >= 0:
-            level['W'].remove(level['W'].sprites()[wall_index])
-            level['M'].remove(self)
+            level['W'].sprites()[wall_index].kill()
+            self.kill()
         elif not self.in_borders(new_position, level) or iron_index != -1:
-            level['M'].remove(self)
+            self.kill()
         else:
             self.rect = new_position
-
-        # if self.set_position(new_position, level) != new_position:
-        #     print(new_position)
-        #     self.rect = new_position
-        # else:
-        #     level['M'].remove(self)

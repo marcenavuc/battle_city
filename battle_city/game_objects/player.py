@@ -3,7 +3,7 @@ from typing import Tuple
 import pygame
 
 from battle_city.config import CELL_SIZE
-from battle_city.game_objects import Tank
+from battle_city.game_objects.tank import Tank
 from battle_city.game_objects import Directions
 
 

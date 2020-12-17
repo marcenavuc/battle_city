@@ -8,8 +8,10 @@ from pygame.sprite import Sprite, Group
 from battle_city.config import CELL_WIDTH, CELL_HEIGHT
 from battle_city.game_objects.blocks import wall_generator, Leaves, Water, Iron, \
     Base
+from battle_city.game_objects.tank import SpeedTank
+
 from battle_city.utils import Vector
-from battle_city.game_objects import GameObject, Tank, Player, Missile
+from battle_city.game_objects import GameObject, EnemyTank, Player, Missile
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +22,8 @@ class LevelsRepository(Sequence):
         "A": Water,
         "I": Iron,
         "B": Base,
-        "T": Tank,
+        "T": EnemyTank,
+        "S": SpeedTank,
         "P": Player,
         "M": Missile,
         "L": Leaves,

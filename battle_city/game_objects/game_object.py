@@ -1,6 +1,6 @@
+import random
 import pygame
 from enum import Enum
-#  https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.DirtySprite
 from pygame.sprite import DirtySprite
 from battle_city.utils import Vector
 from battle_city.config import CELL_SIZE
@@ -8,10 +8,22 @@ from battle_city.config import CELL_SIZE
 
 class GameObject(DirtySprite):
 
+    def __new__(cls, position: Vector, *groups):
+        assert hasattr(cls, "image"), "You need to specify image on class"
+        new_object = object.__new__(cls)
+        if isinstance(new_object, cls):
+            new_object.sprite = pygame.image.load(cls.image)
+            new_object.sprite = pygame.transform.scale(new_object.sprite,
+                                                       CELL_SIZE)
+            new_object.image = pygame.transform.rotate(new_object.sprite, 0)
+            new_object.rect = new_object.image.get_rect()
+            new_object.rect.x, new_object.rect.y = position.x, position.y
+            cls.__init__(new_object, position, *groups)
+        return new_object
+
     def __init__(self, position: Vector, *groups):
         super().__init__(*groups)
         self.position = position
-        self.image = None
 
     def update(self, event: pygame.event, level, *args):
         pass
@@ -36,28 +48,16 @@ class Directions(Enum):
             "DOWN": 180,
         }.get(self.name)
 
-    def rotate_right(self):
-        return {
-            "UP": self.RIGHT,
-            "RIGHT": self.DOWN,
-            "DOWN": self.LEFT,
-            "LEFT": self.UP,
-        }.get(self.name)
-
-    def rotate_left(self):
-        return {
-            "RIGHT": self.UP,
-            "DOWN": self.RIGHT,
-            "LEFT": self.DOWN,
-            "UP": self.LEFT,
-        }.get(self.name)
+    @staticmethod
+    def random_direction():
+        return random.choice([Directions.UP, Directions.RIGHT,
+                              Directions.DOWN, Directions.LEFT])
 
 
 class Movable(GameObject):
 
     def __init__(self, *args, **kwargs):
-        super(Movable, self).__init__(*args, **kwargs)
-        self.sprite = None
+        super().__init__(*args, **kwargs)
         self.speed = 0
         self.direction = Directions.UP
 
