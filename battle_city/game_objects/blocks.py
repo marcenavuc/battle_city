@@ -18,12 +18,13 @@ class Wall(GameObject):
         self.rect.x, self.rect.y = position.x, position.y
 
 
-def wall_generator(position: Vector):
-    walls = []
-    for y in [-Wall.HEIGHT / 2, Wall.HEIGHT / 2]:
-        for x in [-Wall.WIDTH / 2, Wall.WIDTH / 2]:
-            walls.append(Wall(Vector(position.x + x, position.y + y)))
-    return walls
+class Walls:
+    def __new__(cls, position: Vector):
+        walls = []
+        for y in [-Wall.HEIGHT / 2, Wall.HEIGHT / 2]:
+            for x in [-Wall.WIDTH / 2, Wall.WIDTH / 2]:
+                walls.append(Wall(Vector(position.x + x, position.y + y)))
+        return walls
 
 
 class Water(GameObject):

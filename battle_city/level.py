@@ -1,33 +1,57 @@
 from collections.abc import Sequence
+from enum import Enum
 from typing import Dict, List, Tuple
 import os
 import logging
 
-from pygame.sprite import Sprite, Group
+from pygame.sprite import Group
 
 from battle_city.config import CELL_WIDTH, CELL_HEIGHT
-from battle_city.game_objects.blocks import wall_generator, Leaves, Water, Iron, \
-    Base
+from battle_city.game_objects.blocks import Leaves, Water, Iron, \
+    Base, Walls
 from battle_city.game_objects.tank import SpeedTank
-
 from battle_city.utils import Vector
 from battle_city.game_objects import GameObject, EnemyTank, Player, Missile
 
 logger = logging.getLogger(__name__)
 
 
+class CharMapEnum(Enum):
+    WALL = Walls
+    AQUA = Water
+    IRON = Iron
+    BASE = Base
+    PLAYER = Player
+    LEAVES = Leaves
+    TANK = EnemyTank
+    SPEEDTANK = SpeedTank
+    MISSILE = Missile
+
+    @staticmethod
+    def get_from_symbol(symbol: str):
+        for item in CharMapEnum:
+            if item.name[0] == symbol:
+                return item.value
+
+    @staticmethod
+    def find_name_by_symbol(symbol: str):
+        for item in CharMapEnum:
+            if item.name[0] == symbol:
+                return item.name
+
+
 class LevelsRepository(Sequence):
-    CHAR_MAP = {
-        "W": wall_generator,
-        "A": Water,
-        "I": Iron,
-        "B": Base,
-        "T": EnemyTank,
-        "S": SpeedTank,
-        "P": Player,
-        "M": Missile,
-        "L": Leaves,
-    }
+    # CHAR_MAP = {
+    #     "W": wall_generator,
+    #     "A": Water,
+    #     "I": Iron,
+    #     "B": Base,
+    #     "T": EnemyTank,
+    #     "S": SpeedTank,
+    #     "P": Player,
+    #     "M": Missile,
+    #     "L": Leaves,
+    # }
 
     def __init__(self, levels_dir: str):
         self.current_num_of_level = 0
@@ -57,7 +81,8 @@ class LevelsRepository(Sequence):
 
     @staticmethod
     def _parse_to_map(lines: List[str]) -> Tuple[dict, int, int]:
-        groups = {group_type: Group() for group_type in LevelsRepository.CHAR_MAP}
+        groups = {group_type.name: Group() for group_type in CharMapEnum}
+        # groups = {group_type: Group() for group_type in LevelsRepository.CHAR_MAP}
         # game_env = {}
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
@@ -65,7 +90,7 @@ class LevelsRepository(Sequence):
                 game_obj = LevelsRepository._get_from_symbol(symbol, position)
                 if game_obj is None:
                     continue
-                groups[symbol].add(game_obj)
+                groups[CharMapEnum.find_name_by_symbol(symbol)].add(game_obj)
 
         return groups, x, y
 
@@ -75,32 +100,22 @@ class LevelsRepository(Sequence):
 
     @staticmethod
     def _get_from_symbol(key: str, position: Vector) -> GameObject:
-        obj = LevelsRepository.CHAR_MAP.get(key)
+        # obj = LevelsRepository.CHAR_MAP.get(key)
+        obj = CharMapEnum.get_from_symbol(key)
         return None if obj is None else obj(position)
 
 
 class Level:
 
     def __init__(self, groups: Dict[str, Group], max_x: int, max_y: int):
-        # self.game_env = game_env
-        # self.max_x = max(game_env.keys(), key=lambda t: t[0])[0]
-        # self.max_y = max(game_env.keys(), key=lambda t: t[1])[1]
         self.groups = groups
         self.max_x = max_x * CELL_WIDTH
         self.max_y = max_y * CELL_HEIGHT
         logger.debug("Level was created")
 
     def __getitem__(self, group_name: str) -> Group:
+        print(self.groups)
         return self.groups.get(group_name)
-
-    # def __setitem__(self, key: Vector, value: GameObject):
-    #     if key in self.game_env:
-    #         self.game_env[key] = value
 
     def __iter__(self) -> List[Group]:
         return iter(self.groups.values())
-
-    # def remove(self, position: Vector):
-    #     if position in self.game_env:
-    #         logger.debug(f"Del obj:{self.game_env[position]} pos:{position}")
-    #         self.game_env[position] = GameObject(position)

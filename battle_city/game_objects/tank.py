@@ -4,7 +4,7 @@ import logging
 
 import pygame
 
-from battle_city.config import CELL_SIZE, RESPAWN_TIME
+from battle_city.config import RESPAWN_TIME
 from battle_city.game_objects import Missile
 from battle_city.game_objects.game_object import Directions, Movable
 
@@ -24,9 +24,9 @@ class Tank(Movable):
 
     def set_position(self, position: pygame.rect.Rect, level) -> pygame.rect.Rect:
         if self.in_borders(position, level) and \
-                position.collidelist(level['W'].sprites()) < 0 and \
-                position.collidelist(level['A'].sprites()) < 0 and \
-                position.collidelist(level['I'].sprites()):
+                position.collidelist(level["WALL"].sprites()) < 0 and \
+                position.collidelist(level["AQUA"].sprites()) < 0 and \
+                position.collidelist(level["IRON"].sprites()):
             return position
         return self.rect
 
@@ -35,7 +35,7 @@ class Tank(Movable):
         missile_position = self.move(self.direction)
         self.speed = speed
         if self.is_shot and missile_position != self.rect:
-            level.groups["M"].add(Missile(self.direction, missile_position))
+            level.groups["MISSILE"].add(Missile(missile_position, self.direction))
 
 
 class EnemyTank(Tank):
@@ -43,21 +43,14 @@ class EnemyTank(Tank):
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
-        # self.sprite = pygame.image.load("battle_city/media/images/tank.png")
-        # self.sprite = pygame.transform.scale(self.sprite, CELL_SIZE)
-        # self.image = pygame.transform.rotate(self.sprite, 0)
-        #
-        # self.rect = self.image.get_rect()
-        # self.rect.x, self.rect.y = position.x, position.y
-        # self.direction = Directions.UP
 
     def update(self, event: pygame.event, level, *args):
         if abs(self.time_of_creation - time.time()) < self.period_duration:
             self.random_walk(level)
         elif abs(self.time_of_creation - time.time()) < 2 * self.period_duration:
-            self.move_to_obj("P", level)
+            self.move_to_obj("PLAYER", level)
         else:
-            self.move_to_obj("B", level)
+            self.move_to_obj("BASE", level)
 
     def random_walk(self, level):
         rand_number = random.randint(1, 1000)
@@ -65,8 +58,7 @@ class EnemyTank(Tank):
         if rand_number < 100:
             direction = Directions.random_direction()
         if rand_number < 50:
-            # self.shot(level)
-            pass
+            self.shot(level)
 
         new_position = self.move(direction)
         self.rect = self.set_position(new_position, level)
