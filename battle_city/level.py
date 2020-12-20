@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from enum import Enum
 from typing import Dict, List, Tuple
 import os
@@ -9,9 +8,11 @@ from pygame.sprite import Group
 from battle_city.config import CELL_WIDTH, CELL_HEIGHT
 from battle_city.game_objects.blocks import Leaves, Water, Iron, \
     Base, Walls
-from battle_city.game_objects.tank import SpeedTank
+from battle_city.game_objects.bonuses import SpeedBonus, HealthBonus, RandomKill
+from battle_city.game_objects.tanks import EnemyTank, SpeedTank, HeavyTank, \
+    RushTank
 from battle_city.utils import Vector
-from battle_city.game_objects import GameObject, EnemyTank, Player, Missile
+from battle_city.game_objects import GameObject, Player, Missile
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,17 @@ class CharMapEnum(Enum):
     WALL = Walls
     AQUA = Water
     IRON = Iron
-    BASE = Base
+    COMANDCENTER = Base
     PLAYER = Player
-    LEAVES = Leaves
     TANK = EnemyTank
     SPEEDTANK = SpeedTank
+    HEAVYTANK = HeavyTank
+    RUSHTANK = RushTank
     MISSILE = Missile
+    BONUS = HealthBonus
+    VELOCITYBONUS = SpeedBonus
+    KILLBONUS = RandomKill
+    LEAVES = Leaves
 
     @staticmethod
     def get_from_symbol(symbol: str):
@@ -40,18 +46,7 @@ class CharMapEnum(Enum):
                 return item.name
 
 
-class LevelsRepository(Sequence):
-    # CHAR_MAP = {
-    #     "W": wall_generator,
-    #     "A": Water,
-    #     "I": Iron,
-    #     "B": Base,
-    #     "T": EnemyTank,
-    #     "S": SpeedTank,
-    #     "P": Player,
-    #     "M": Missile,
-    #     "L": Leaves,
-    # }
+class LevelsRepository:
 
     def __init__(self, levels_dir: str):
         self.current_num_of_level = 0
@@ -68,6 +63,7 @@ class LevelsRepository(Sequence):
     def __getitem__(self, index: int) -> "Level":
         if self.current_num_of_level != index or self.latest_level is None:
             self.latest_level = self.load_level(index)
+            self.current_num_of_level = index
 
         return self.latest_level
 
@@ -79,11 +75,13 @@ class LevelsRepository(Sequence):
         logger.debug(f"loaded level {num}")
         return Level(*self._parse_to_map(lines))
 
+    def refresh(self, current_level: int):
+        if not self.latest_level is None:
+            self.latest_level = self.load_level(current_level)
+
     @staticmethod
     def _parse_to_map(lines: List[str]) -> Tuple[dict, int, int]:
         groups = {group_type.name: Group() for group_type in CharMapEnum}
-        # groups = {group_type: Group() for group_type in LevelsRepository.CHAR_MAP}
-        # game_env = {}
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
                 position = Vector(x * CELL_WIDTH, y * CELL_HEIGHT)
@@ -100,7 +98,6 @@ class LevelsRepository(Sequence):
 
     @staticmethod
     def _get_from_symbol(key: str, position: Vector) -> GameObject:
-        # obj = LevelsRepository.CHAR_MAP.get(key)
         obj = CharMapEnum.get_from_symbol(key)
         return None if obj is None else obj(position)
 
@@ -111,10 +108,19 @@ class Level:
         self.groups = groups
         self.max_x = max_x * CELL_WIDTH
         self.max_y = max_y * CELL_HEIGHT
+
+        self.groups["TANKS"] = Group()
+        for tank_type in ["TANK", "SPEEDTANK", "HEAVYTANK", "RUSHTANK"]:
+            self.groups["TANKS"].add(self.groups[tank_type].sprites())
+            self.groups[tank_type].empty()
+
+        self.groups["BONUSES"] = Group()
+        for tank_type in ["BONUS", "VELOCITYBONUS", "KILLBONUS"]:
+            self.groups["BONUSES"].add(self.groups[tank_type].sprites())
+
         logger.debug("Level was created")
 
     def __getitem__(self, group_name: str) -> Group:
-        print(self.groups)
         return self.groups.get(group_name)
 
     def __iter__(self) -> List[Group]:

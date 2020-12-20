@@ -22,7 +22,7 @@ class Button:
     def is_moused(self) -> bool:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         return self.rect.x < mouse_x < self.rect.bottomright[0] \
-                and self.rect.y < mouse_y < self.rect.y + self.rect.height
+               and self.rect.y < mouse_y < self.rect.y + self.rect.height
 
 
 class Display:
@@ -34,7 +34,7 @@ class Display:
         logger.debug("Display was created")
 
     def _message_to_screen(self, text: str, color,
-                           position: Tuple[float, float])\
+                           position: Tuple[float, float]) \
             -> Tuple[pygame.Rect, pygame.Rect]:
 
         text_surface = self.font.render(text, True, color)
@@ -69,12 +69,29 @@ class Display:
 
     def game_screen(self, level: Level, event: pygame.event):
         self.screen.fill(pygame.Color("black"))
-
-        # for position in level:
-        #     level[position].on_event(event, level)
-        #     self._show_game_obj(level[position])
         for game_group in level:
             game_group.update(event, level)
             game_group.draw(self.screen)
-
         return True
+
+    def die_screen(self):
+        self.screen.fill(pygame.Color("black"))
+        self._message_to_screen("WASTED",
+                                pygame.Color("red"),
+                                (self.width / 2, self.height / 3))
+
+        level_button = Button(self._message_to_screen("PLAY AGAIN",
+                                                      pygame.Color("red"),
+                                                      (self.width / 2,
+                                                       self.height / 2))[1])
+
+        menu_button = Button(self._message_to_screen("MENU",
+                                                     pygame.Color("red"),
+                                                     (self.width / 2,
+                                                      self.height / 3 * 2))[1])
+        if menu_button.is_clicked():
+            logger.debug("Main screen was ended")
+        if level_button.is_clicked():
+            logger.debug("Rerun previous level")
+
+        return menu_button.is_clicked(), level_button.is_clicked()

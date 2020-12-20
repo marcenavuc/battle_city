@@ -7,7 +7,7 @@ from battle_city.level import LevelsRepository, Level
 
 
 @pytest.mark.parametrize("path, result", [
-    ("battle_city/media/levels", ['battle_city/media/levels/level1.txt']),
+    ("battle_city/media/levels", ['battle_city/media/levels/level3.txt']),
     ("some incorrect path", [])
 ])
 def test_level_repository_init(path, result):

@@ -26,7 +26,7 @@ class Tank(Movable):
         if self.in_borders(position, level) and \
                 position.collidelist(level["WALL"].sprites()) < 0 and \
                 position.collidelist(level["AQUA"].sprites()) < 0 and \
-                position.collidelist(level["IRON"].sprites()):
+                position.collidelist(level["IRON"].sprites()) < 0:
             return position
         return self.rect
 
@@ -107,7 +107,6 @@ class RushTank(EnemyTank):
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
         self.speed = 5
-        self.health = 1
 
     def update(self, event: pygame.event, level, *args):
         self.move_to_obj("B", level)

@@ -1,9 +1,7 @@
-from typing import Tuple
-
 import pygame
 
 from battle_city.config import CELL_SIZE
-from battle_city.game_objects.tank import Tank
+from battle_city.game_objects.tanks import Tank
 from battle_city.game_objects import Directions
 
 
@@ -25,6 +23,7 @@ class Player(Tank):
         self.rect.x, self.rect.y = position.x, position.y
         self.direction = Directions.UP
         self.speed = 5
+        self.health = 2
 
     def update(self, event: pygame.event, level, *args):
         if event.type == pygame.KEYUP:
