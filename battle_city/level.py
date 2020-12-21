@@ -1,18 +1,20 @@
+import json
+import logging
+import os
 from enum import Enum
 from typing import Dict, List, Tuple
-import os
-import logging
-import json
+
 from pygame.sprite import Group
 
-from battle_city.config import CELL_WIDTH, CELL_HEIGHT
-from battle_city.game_objects.blocks import Leaves, Water, Iron, \
-    Base, Walls, Wall
-from battle_city.game_objects.bonuses import SpeedBonus, HealthBonus, RandomKill
-from battle_city.game_objects.tanks import EnemyTank, SpeedTank, HeavyTank, \
-    RushTank
+from battle_city.config import CELL_HEIGHT, CELL_WIDTH
+from battle_city.game_objects import GameObject, Missile, Player
+from battle_city.game_objects.blocks import (Base, Iron, Leaves, Wall, Walls,
+                                             Water)
+from battle_city.game_objects.bonuses import (HealthBonus, RandomKill,
+                                              SpeedBonus)
+from battle_city.game_objects.tanks import (EnemyTank, HeavyTank, RushTank,
+                                            SpeedTank)
 from battle_city.utils import Vector
-from battle_city.game_objects import GameObject, Player, Missile
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,6 @@ class CharMapEnum(Enum):
 
 
 class LevelsRepository:
-
     def __init__(self, levels_dir: str):
         self.current_num_of_level = 0
         self.levels_dir = levels_dir
@@ -76,7 +77,7 @@ class LevelsRepository:
         return Level(*self._parse_to_map(lines))
 
     def refresh(self, current_level: int):
-        if not self.latest_level is None:
+        if self.latest_level is not None:
             self.latest_level = self.load_level(current_level)
 
     @staticmethod
@@ -103,7 +104,6 @@ class LevelsRepository:
 
 
 class Level:
-
     def __init__(self, groups: Dict[str, Group], max_x: int, max_y: int):
         self.groups = groups
         self.max_x = max_x * CELL_WIDTH
@@ -131,8 +131,7 @@ class Level:
         for group_name, group in self.groups.items():
             serialize_obj[group_name[0]] = group.sprites()
         with open(f"saves/{text}.txt", "w") as file:
-            json.dump(serialize_obj, file,
-                      default=lambda x: x.__dict__(), indent=4)
+            json.dump(serialize_obj, file, default=lambda x: x.__dict__(), indent=4)
         logger.debug("Level was serialized")
 
     @staticmethod

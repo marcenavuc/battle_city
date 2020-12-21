@@ -1,6 +1,6 @@
 import pygame
 
-from battle_city.config import CELL_WIDTH, CELL_HEIGHT
+from battle_city.config import CELL_HEIGHT, CELL_WIDTH
 from battle_city.game_objects.game_object import GameObject
 from battle_city.utils import Vector
 

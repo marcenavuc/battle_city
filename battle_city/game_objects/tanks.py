@@ -1,6 +1,6 @@
+import logging
 import random
 import time
-import logging
 
 import pygame
 
@@ -22,20 +22,24 @@ class Tank(Movable):
         self.period_duration = RESPAWN_TIME / 8
         self.time_of_creation = time.time()
 
-    def set_position(self, position: pygame.rect.Rect, level) -> pygame.rect.Rect:
-        if self.in_borders(position, level) and \
-                position.collidelist(level["WALL"].sprites()) < 0 and \
-                position.collidelist(level["AQUA"].sprites()) < 0 and \
-                position.collidelist(level["IRON"].sprites()) < 0:
+    def set_position(self, position: pygame.rect.Rect, level) \
+            -> pygame.rect.Rect:
+        if (
+            self.in_borders(position, level)
+            and position.collidelist(level["WALL"].sprites()) < 0
+            and position.collidelist(level["AQUA"].sprites()) < 0
+            and position.collidelist(level["IRON"].sprites()) < 0
+        ):
             return position
         return self.rect
 
     def shot(self, level):
-        self.speed, speed = 13*3, self.speed
+        self.speed, speed = 13 * 3, self.speed
         missile_position = self.move(self.direction)
         self.speed = speed
         if self.is_shot and missile_position != self.rect:
-            level.groups["MISSILE"].add(Missile(missile_position, self.direction))
+            missile = Missile(missile_position, self.direction)
+            level.groups["MISSILE"].add(missile)
 
 
 class EnemyTank(Tank):
@@ -47,7 +51,7 @@ class EnemyTank(Tank):
     def update(self, event: pygame.event, level, *args):
         if abs(self.time_of_creation - time.time()) < self.period_duration:
             self.random_walk(level)
-        elif abs(self.time_of_creation - time.time()) < 2 * self.period_duration:
+        elif abs(self.time_of_creation - time.time()) < 2*self.period_duration:
             self.move_to_obj("PLAYER", level)
         else:
             self.move_to_obj("BASE", level)

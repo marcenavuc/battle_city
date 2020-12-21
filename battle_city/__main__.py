@@ -1,24 +1,21 @@
-import pygame
+import logging
+import os
+import sys
 from datetime import datetime
 
-from battle_city.level import LevelsRepository, Level
-from battle_city.view import Display, ViewStates
-from battle_city.config import DISPLAY_SIZE, FPS, FONT_PATH, LEVELS_PATH, \
-    FONT_SIZE
+import pygame
 
-import logging
-import sys
-import os
+from battle_city.config import (DISPLAY_SIZE, FONT_PATH, FONT_SIZE, FPS,
+                                LEVELS_PATH)
+from battle_city.level import Level, LevelsRepository
+from battle_city.view import Display, ViewStates
 
 application_folder = os.path.dirname(os.path.abspath(__file__))
 fonts_path = os.path.join(application_folder, FONT_PATH)
 levels_path = os.path.join(application_folder, LEVELS_PATH)
 
 # Init logger
-logging.basicConfig(
-    level=logging.DEBUG,
-    handlers=[logging.StreamHandler(sys.stdout)]
-)
+logging.basicConfig(level=logging.DEBUG, handlers=[logging.StreamHandler(sys.stdout)])
 
 logger = logging.getLogger(__name__)
 logger.debug("Game started")
@@ -28,9 +25,9 @@ pygame.font.init()
 pygame.mixer.init()
 logger.debug("Initialized pygame things")
 
-BACKGROUND_MUSIC = pygame.mixer.Sound('battle_city/media/sounds/DOOM.ogg')
-MENU_MUSIC = pygame.mixer.Sound('battle_city/media/sounds/ANewMorning.ogg')
-FIRE_MUSIC = pygame.mixer.Sound('battle_city/media/sounds/fire.ogg')
+BACKGROUND_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/DOOM.ogg")
+MENU_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/ANewMorning.ogg")
+FIRE_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/fire.ogg")
 BACKGROUND_MUSIC.set_volume(0)
 MENU_MUSIC.set_volume(0)
 FIRE_MUSIC.set_volume(0)
@@ -42,8 +39,10 @@ logger.debug("Initialized music")
 clock = pygame.time.Clock()
 logger.debug("main parameters was initialized")
 
-display = Display(pygame.display.set_mode(DISPLAY_SIZE, pygame.RESIZABLE),
-                  font=pygame.font.Font(fonts_path, FONT_SIZE))
+display = Display(
+    pygame.display.set_mode(DISPLAY_SIZE, pygame.RESIZABLE),
+    font=pygame.font.Font(fonts_path, FONT_SIZE),
+)
 logger.debug("display initialized")
 
 levels_repository = LevelsRepository(levels_path)
@@ -113,7 +112,9 @@ while True:
         is_save = display.pause_screen()
         if is_save:
             logger.debug("Saving level")
-            level.serialize(f"level: {current_level} {datetime.now().strftime('%d:%m:%y %H:%M')}")
+            level.serialize(
+                f"level: {current_level} {datetime.now().strftime('%d:%m:%y %H:%M')}"
+            )
             state = ViewStates.GAME
 
     pygame.display.update()

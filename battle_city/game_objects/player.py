@@ -1,8 +1,8 @@
 import pygame
 
 from battle_city.config import CELL_SIZE
-from battle_city.game_objects.tanks import Tank
 from battle_city.game_objects import Directions
+from battle_city.game_objects.tanks import Tank
 
 
 class Player(Tank):

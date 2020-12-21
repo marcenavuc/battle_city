@@ -1,6 +1,4 @@
 # Main Parameters
-import pygame
-
 FONT_PATH = "media/battle_font.ttf"
 LEVELS_PATH = "media/levels"
 TANK_SPRITE = "battle_city/media/images/enemy.png"
@@ -16,8 +14,3 @@ DISPLAY_WIDTH = CELL_WIDTH * 30
 DISPLAY_HEIGHT = CELL_HEIGHT * 30
 DISPLAY_SIZE = (DISPLAY_WIDTH, DISPLAY_HEIGHT)
 RESPAWN_TIME = 64
-
-# Music
-# BEST_MUSIC = pygame.mixer.Sound('media/sounds/DOOM.ogg')
-# FIRE_SOUND = pygame.mixer.Sound('media/sounds/fire.ogg')
-# START_SCREEN = pygame.mixer.Sound('media/sounds/ANewMorning.ogg')
