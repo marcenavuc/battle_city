@@ -2,12 +2,12 @@ from enum import Enum
 from typing import Dict, List, Tuple
 import os
 import logging
-
+import json
 from pygame.sprite import Group
 
 from battle_city.config import CELL_WIDTH, CELL_HEIGHT
 from battle_city.game_objects.blocks import Leaves, Water, Iron, \
-    Base, Walls
+    Base, Walls, Wall
 from battle_city.game_objects.bonuses import SpeedBonus, HealthBonus, RandomKill
 from battle_city.game_objects.tanks import EnemyTank, SpeedTank, HeavyTank, \
     RushTank
@@ -125,3 +125,44 @@ class Level:
 
     def __iter__(self) -> List[Group]:
         return iter(self.groups.values())
+
+    def serialize(self, text: str):
+        serialize_obj = {"max_x": self.max_x, "max_y": self.max_y}
+        for group_name, group in self.groups.items():
+            serialize_obj[group_name[0]] = group.sprites()
+        with open(f"saves/{text}.txt", "w") as file:
+            json.dump(serialize_obj, file,
+                      default=lambda x: x.__dict__(), indent=4)
+        logger.debug("Level was serialized")
+
+    @staticmethod
+    def unserialize(file_path: str) -> "Level":
+        logger.debug("Started unserialization")
+        with open(file_path) as json_file:
+            serialize_obj = json.load(json_file)
+
+        max_x = serialize_obj["max_x"]
+        max_y = serialize_obj["max_y"]
+        groups = {}
+        for group_symbol, values in serialize_obj.items():
+            group_name = CharMapEnum.find_name_by_symbol(group_symbol)
+            if group_name:
+                groups[group_name] = Group()
+                objs = []
+                logger.debug(f"Started process group {group_name}")
+                for json_obj in values:
+                    game_obj = Level.get_object_from_json(json_obj, group_name)
+                    objs.append(game_obj)
+                groups[group_name].add(*objs)
+        return Level(groups, max_x, max_y)
+
+    @staticmethod
+    def get_object_from_json(json_obj, group_name: str):
+        cls = CharMapEnum[group_name].value
+        position = Vector(json_obj["x"], json_obj["y"])
+        if not issubclass(cls, GameObject):  # In case of WALLS
+            cls = Wall
+        if issubclass(cls, Missile):
+            logger.debug(f"Founded Missile on pos: {position}")
+            return cls(position, json_obj.get("direction"))
+        return cls(position)

@@ -25,6 +25,12 @@ class GameObject(DirtySprite):
         super().__init__(*groups)
         self.position = position
 
+    def __dict__(self):
+        return {"x": self.rect.x, "y": self.rect.y}
+
+    def __str__(self):
+        return self.__dict__()
+
     def update(self, event: pygame.event, level, *args):
         pass
 
@@ -68,3 +74,8 @@ class Movable(GameObject):
             self.direction = direction
         step = direction.value * self.speed
         return self.rect.move(*step)
+
+    def __dict__(self):
+        return {"x": self.rect.x,
+                "y": self.rect.y,
+                "direction": self.direction.name}

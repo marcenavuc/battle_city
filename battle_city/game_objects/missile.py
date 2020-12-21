@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 class Missile(Movable):
     image = "battle_city/media/images/missile.png"
-    # sound = pygame.mixer.Sound('media/sounds/fire.ogg')
 
     def __init__(self, position, direction: Directions, *args, **kwargs):
         super().__init__(position, *args, **kwargs)
@@ -18,8 +17,6 @@ class Missile(Movable):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position.x, position.y
         self.speed = 15
-        # Missile.sound.set_volume(10)
-        # Missile.sound.play()
         logger.debug(f"Missle was created on position: \
         {position} with direction {self.direction}")
 
