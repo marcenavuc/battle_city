@@ -15,21 +15,18 @@ def mock_get_pos(mocker, mouse_coords):
     ((0, 0, 10, 10), (0, 11), False),
     ((0, 0, 10, 10), (11, 0), False),
 ])
-def test_button_is_moused(set_pygame, btn_size, mouse_coords, result):
+def test_button_is_moused(set_pygame,  btn_size, mouse_coords, result):
+    # mocker.patch("pygame.mouse.get_pos", return_value=mouse_coords)
     button = Button(btn_size)
     assert button.is_moused() is result
 
 
-# @pytest.fixture
-# def mock_get_pressed(mocker, clicked):
-#     mocker.patch("pygame.mouse.get_pressed", return_value=clicked)
-#
-#
-# @pytest.mark.parametrize("mouse_coords, clicked, result", [
-#     ((5, 5), [True], True)
-# ])
-# def test_button_is_clicked(set_pygame,
-#                            mouse_coords, clicked, result):
-#     button = Button((0, 0, 10, 10))  # Здесь координаты не имеют значения
-#     assert button.is_clicked() is result
+@pytest.mark.parametrize("mouse_coords, clicked, result", [
+    ((5, 5), [True], True)
+])
+def test_button_is_clicked(set_pygame, mocker,
+                           mouse_coords, clicked, result):
+    mocker.patch("pygame.mouse.get_pressed", return_value=clicked)
+    button = Button((0, 0, 10, 10))  # Здесь координаты не имеют значения
+    assert button.is_clicked() is result
 

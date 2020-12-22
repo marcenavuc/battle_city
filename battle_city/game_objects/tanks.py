@@ -54,7 +54,7 @@ class EnemyTank(Tank):
         elif abs(self.time_of_creation - time.time()) < 2*self.period_duration:
             self.move_to_obj("PLAYER", level)
         else:
-            self.move_to_obj("BASE", level)
+            self.move_to_obj("COMMANDCENTER", level)
 
     def random_walk(self, level):
         rand_number = random.randint(1, 1000)
@@ -113,4 +113,4 @@ class RushTank(EnemyTank):
         self.speed = 5
 
     def update(self, event: pygame.event, level, *args):
-        self.move_to_obj("B", level)
+        self.move_to_obj("COMMANDCENTER", level)

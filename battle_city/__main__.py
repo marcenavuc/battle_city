@@ -112,9 +112,8 @@ while True:
         is_save = display.pause_screen()
         if is_save:
             logger.debug("Saving level")
-            level.serialize(
-                f"level: {current_level} {datetime.now().strftime('%d:%m:%y %H:%M')}"
-            )
+            date = datetime.now().strftime('%d:%m:%y %H:%M')
+            level.serialize(f"level: {current_level} {date}")
             state = ViewStates.GAME
 
     pygame.display.update()

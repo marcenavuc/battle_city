@@ -1,9 +1,10 @@
 import pytest
-from pytest_mock import mocker
 
-from battle_city import GameObject
-from battle_city.game_objects import Wall, Tank, Player
-from battle_city.level import LevelsRepository, Level
+from battle_city.game_objects import Player
+from battle_city.game_objects.blocks import Iron, Leaves, Water, Base
+from battle_city.game_objects.tanks import Tank
+from battle_city.level import LevelsRepository
+from battle_city.utils import Vector
 
 
 @pytest.mark.parametrize("path, result", [
@@ -19,18 +20,23 @@ def test_level_repository_init(path, result):
 
 
 @pytest.mark.parametrize("symbol, result", [
-    (".", GameObject),
-    ("T", Wall),
-    ("X", Tank),
+    (".", None),
+    ("I", Iron),
+    ("L", Leaves),
+    ("A", Water),
+    ("C", Base),
+    ("T", Tank),
     ("P", Player),
     ("Simple wrong symbol", None)
 ])
 def test_level_repository_get_from_symbol(symbol, result):
-    try:
-        assert isinstance(LevelsRepository._get_from_symbol(symbol, (0, 0)),
-                          result)
-    except Exception as e:
-        assert isinstance(e, KeyError)
+    obj = LevelsRepository._get_from_symbol(symbol, Vector(0, 0))
+    if obj is None:
+        assert obj is result
+    elif isinstance(obj, list):
+        assert obj[0] is result
+    else:
+        assert isinstance(obj, result)
 
 
 @pytest.fixture()
@@ -40,6 +46,8 @@ def levels_rep():
 
 @pytest.mark.parametrize("level_num", [
     0,
+    1,
+    2,
     100,
 ])
 def test_level_repository_load_level(levels_rep, level_num):
@@ -47,4 +55,4 @@ def test_level_repository_load_level(levels_rep, level_num):
         level = levels_rep.load_level(level_num)
         assert level is not None
     except IndexError as e:
-        assert level_num != 0  # У меня есть только 0 уровень(((
+        assert level_num != 0

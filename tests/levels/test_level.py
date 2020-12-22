@@ -1,54 +1,53 @@
+import os
 import pytest
 from pytest_mock import mocker
 
-from battle_city import Level, GameObject
-from battle_city.game_objects import Tank, Wall
-
-
-@pytest.mark.parametrize("game_map, max_x, max_y", [
-    ({(0, 0): GameObject((0, 0))}, 0, 0),
-    ({(0, 100): GameObject((0, 100)),
-      (100, 0): GameObject((100, 0))}, 100, 100),
-])
-def test_level_init(game_map, max_x, max_y):
-    level = Level(game_map)
-    assert level.max_x == max_x
-    assert level.max_y == max_y
+from battle_city import Level
+from battle_city.game_objects import Missile, Directions
+from battle_city.game_objects.blocks import Iron, Wall
+from battle_city.game_objects.tanks import EnemyTank
+from tests.conftest import is_same_levels
 
 
 @pytest.mark.parametrize("key, result", [
-    ((100, 100), None)
+    ("Some unknown group", None),
+    ("IRON", Iron),
+    ("TANKS", EnemyTank),
 ])
-def test_level_get_item(simple_level, key, result):
-    assert simple_level[key] is result
-
-
-@pytest.mark.parametrize("key, result", [
-    ((0, 0), GameObject((0, 0))),
-    ((100, 100), Tank((100, 100)))
-])
-def test_level_set_item(simple_level, key, result):
-    simple_level[key] = result
-
-
-@pytest.mark.parametrize("position, result", [
-    ((0, 0), GameObject),
-    ((50, 50), None)
-])
-def test_level_remove(simple_level, position, result):
-    simple_level.remove(position)
-    if result:
-        assert isinstance(simple_level[position], result)
+def test_level_get_item(level, key, result):
+    if level[key] is None:
+        assert level[key] is result
     else:
-        assert simple_level[position] is result
+        print(level[key].sprites())
+        assert isinstance(level[key].sprites()[0], result)
 
 
-@pytest.mark.parametrize("position, new_position, game_obj", [
-    ((0, 0), (0, 1), Wall),
+def test_level_iter(level):
+    iter(level)
+    assert True
+
+
+@pytest.fixture()
+def fake_file():
+    yield "test"
+    if os.path.exists("saves/test.txt"):
+        os.remove("saves/test.txt")
+
+
+def test_level_serialize(level, fake_file):
+    level.serialize("test")
+
+
+@pytest.mark.parametrize("json_obj, group_name, result", [
+    ({"x": 0, "y": 0}, "IRON", Iron),
+    ({"x": 0, "y": 0}, "WALL", Wall),  # Important test
+    ({"x": 0, "y": 0, "direction": Directions.UP}, "MISSILE", Missile)
 ])
-def test_level_update(simple_level, position, new_position, game_obj):
-    simple_level[position] = game_obj(new_position)
-    simple_level.update()
-    assert isinstance(simple_level[position], GameObject) \
-            and isinstance(simple_level[new_position], game_obj) \
-            and simple_level[new_position].position == new_position
+def test_level_get_object_from_json(level, json_obj, group_name, result):
+    assert isinstance(Level.get_object_from_json(json_obj, group_name), result)
+
+
+def test_level_unserilize(level, fake_file):
+    level.serialize("test")
+    serialized_level = Level.unserialize("saves/test.txt")
+    is_same_levels(level, serialized_level)

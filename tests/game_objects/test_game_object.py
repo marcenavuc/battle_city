@@ -1,13 +1,13 @@
 import pytest
 from pytest_mock import mocker
 
-from battle_city import Level, GameObject
-from battle_city.game_objects import Tank, Wall
+from battle_city import GameObject
+from battle_city.utils import Vector
 
 
 @pytest.mark.parametrize("position, result", [
-    ((0, 1), True),
-    ((-100, -100), False)
+    (Vector(0, 1), True),
+    (Vector(-100, -100), False)
 ])
-def test_game_object_in_borders(simple_level, position, result):
-    assert GameObject.in_borders(position, simple_level) is result
+def test_game_object_in_borders(level, position, result):
+    assert GameObject.in_borders(position, level) is result

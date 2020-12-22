@@ -156,7 +156,7 @@ class Level:
         return Level(groups, max_x, max_y)
 
     @staticmethod
-    def get_object_from_json(json_obj, group_name: str):
+    def get_object_from_json(json_obj: Dict, group_name: str):
         cls = CharMapEnum[group_name].value
         position = Vector(json_obj["x"], json_obj["y"])
         if not issubclass(cls, GameObject):  # In case of WALLS
