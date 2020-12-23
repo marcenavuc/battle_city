@@ -9,7 +9,7 @@ from pygame.sprite import Group
 from battle_city.config import CELL_HEIGHT, CELL_WIDTH
 from battle_city.game_objects import GameObject, Missile, Player
 from battle_city.game_objects.blocks import (Base, Iron, Leaves, Wall, Walls,
-                                             Water)
+                                             Water, Floor)
 from battle_city.game_objects.bonuses import (HealthBonus, RandomKill,
                                               SpeedBonus)
 from battle_city.game_objects.tanks import (EnemyTank, HeavyTank, RushTank,
@@ -23,6 +23,7 @@ class CharMapEnum(Enum):
     WALL = Walls
     AQUA = Water
     IRON = Iron
+    FLOOR = Floor
     COMANDCENTER = Base
     PLAYER = Player
     TANK = EnemyTank

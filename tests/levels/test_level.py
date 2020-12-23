@@ -1,6 +1,5 @@
 import os
 import pytest
-from pytest_mock import mocker
 
 from battle_city import Level
 from battle_city.game_objects import Missile, Directions

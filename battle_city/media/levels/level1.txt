@@ -21,6 +21,6 @@ IIIIII......LL......IIIIII
 ..WWW................WWWLL
 ..WWW.....B..........WWWLL
 ....WW..............LLLLLL
-...........WWWW.....LLLLLL
-........P..WC.W.......LLLL
+..F........WWWW.....LLLLLL
+..F.....P..WC.W.......LLLL
 ....WW.....W..W.....WWLLLL

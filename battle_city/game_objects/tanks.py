@@ -16,6 +16,7 @@ class Tank(Movable):
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
+        self.velocity = 5
         self.health = 1
         self.speed = 5
         self.is_shot = True
@@ -24,6 +25,10 @@ class Tank(Movable):
 
     def set_position(self, position: pygame.rect.Rect, level) \
             -> pygame.rect.Rect:
+        if position.collidelist(level["FLOOR"].sprites()) >= 0:
+            self.speed = self.velocity / 2
+        else:
+            self.speed = self.velocity
         if (
             self.in_borders(position, level)
             and position.collidelist(level["WALL"].sprites()) < 0

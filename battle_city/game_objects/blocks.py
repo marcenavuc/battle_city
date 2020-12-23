@@ -41,3 +41,7 @@ class Iron(GameObject):
 
 class Base(GameObject):
     image = "battle_city/media/images/base.png"
+
+
+class Floor(GameObject):
+    image = "battle_city/media/images/floor.png"
