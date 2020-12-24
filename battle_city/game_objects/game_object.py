@@ -66,13 +66,17 @@ class Movable(GameObject):
         self.speed = 0
         self.direction = Directions.UP
 
-    def move(self, direction: Directions) -> pygame.rect.Rect:
+    def move(self, direction: Directions, speed: int = -1) -> pygame.rect.Rect:
+        if speed == -1:
+            speed = self.speed
         if self.direction != direction:
             angle = direction.get_angle()
             self.image = pygame.transform.rotate(self.sprite, angle)
             self.direction = direction
-        step = direction.value * self.speed
+        step = direction.value * speed
         return self.rect.move(*step)
 
     def __dict__(self):
-        return {"x": self.rect.x, "y": self.rect.y, "direction": self.direction.name}
+        return {"x": self.rect.x,
+                "y": self.rect.y,
+                "direction": self.direction.name}

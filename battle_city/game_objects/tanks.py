@@ -39,10 +39,8 @@ class Tank(Movable):
         return self.rect
 
     def shot(self, level):
-        self.speed, speed = 13 * 3, self.speed
-        missile_position = self.move(self.direction)
-        self.speed = speed
-        if self.is_shot and missile_position != self.rect:
+        missile_position = self.move(self.direction, speed=20)
+        if self.is_shot and missile_position.colliderect(missile_position):
             missile = Missile(missile_position, self.direction)
             level.groups["MISSILE"].add(missile)
 
