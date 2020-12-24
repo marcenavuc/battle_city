@@ -27,13 +27,10 @@ logger.debug("Initialized pygame things")
 
 BACKGROUND_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/DOOM.ogg")
 MENU_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/ANewMorning.ogg")
-FIRE_MUSIC = pygame.mixer.Sound("battle_city/media/sounds/fire.ogg")
 BACKGROUND_MUSIC.set_volume(0)
 MENU_MUSIC.set_volume(0)
-FIRE_MUSIC.set_volume(0)
 BACKGROUND_MUSIC.play()
 MENU_MUSIC.play()
-FIRE_MUSIC.play()
 logger.debug("Initialized music")
 
 clock = pygame.time.Clock()

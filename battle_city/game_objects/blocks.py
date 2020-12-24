@@ -23,7 +23,7 @@ class Walls:
         walls = []
         for y in [-Wall.HEIGHT / 2, Wall.HEIGHT / 2]:
             for x in [-Wall.WIDTH / 2, Wall.WIDTH / 2]:
-                walls.append(Wall(Vector(position.x + x, position.y + y)))
+                walls.append(Wall(position + Vector(x, y)))
         return walls
 
 
