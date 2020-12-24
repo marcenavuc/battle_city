@@ -8,8 +8,8 @@ from battle_city.game_objects import GameObject
 class Bonus(GameObject):
     image = "battle_city/media/images/bonus_hat.png"
 
-    def __init__(self, position, *args, **kwars):
-        super().__init__(position, *args)
+    def __init__(self, position, *args, **kwargs):
+        super().__init__(position, *args, **kwargs)
 
     def update(self, event: pygame.event, level, *args):
         player_index = self.rect.collidelist(level["PLAYER"].sprites())

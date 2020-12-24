@@ -44,10 +44,6 @@ logger.debug("display initialized")
 
 levels_repository = LevelsRepository(levels_path)
 
-# is_start = True
-# is_game = True
-# is_die = True
-# is_paused = False
 state = ViewStates.START
 current_level = 0
 logger.debug("Main loop started")
