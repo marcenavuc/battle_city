@@ -119,7 +119,10 @@ class Level:
         for tank_type in ["BONUS", "VELOCITYBONUS", "KILLBONUS"]:
             self.groups["BONUSES"].add(self.groups[tank_type].sprites())
 
+        leaves_group = self.groups.pop("LEAVES")
+        self.groups["LEAVES"] = leaves_group
         logger.debug("Level was created")
+        logger.debug(self.groups)
 
     def __getitem__(self, group_name: str) -> Group:
         return self.groups.get(group_name)
