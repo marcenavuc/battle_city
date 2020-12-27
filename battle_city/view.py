@@ -150,7 +150,8 @@ class View:
         self.clock = pygame.time.Clock()
         logger.debug("Initialized clock")
 
-    def show(self, state: GameStates, level, event: pygame.event):
+    def show(self, state: GameStates, level, event):
+        result_state = state
         if state == GameStates.GAME:
             self.menu_music.set_volume(0)
             self.game_music.set_volume(1)
@@ -160,20 +161,20 @@ class View:
             self.game_music.set_volume(0)
             is_game, is_save = self.display.main_screen()
             if is_game:
-                return GameStates.GAME
+                result_state = GameStates.GAME
             if is_save:
-                return GameStates.LOAD_SAVE
+                result_state = GameStates.LOAD_SAVE
         if state == GameStates.DIE:
             is_start, is_game = self.display.die_screen()
             if is_game:
-                return GameStates.RELOAD_LEVEL
+                result_state = GameStates.RELOAD_LEVEL
             if is_start:
-                return GameStates.START
+                result_state = GameStates.START
         if state == GameStates.PAUSE:
             is_save = self.display.pause_screen()
             if is_save:
-                return GameStates.SAVE_LEVEL
+                result_state = GameStates.SAVE_LEVEL
 
-        pygame.display.update()
+        # pygame.display.update()
         self.clock.tick(FPS)
-        return state
+        return result_state

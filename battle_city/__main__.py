@@ -6,6 +6,7 @@ import pygame
 
 # from battle_city.config import (DISPLAY_SIZE, FONT_PATH, FONT_SIZE, FPS,
 #                                 LEVELS_PATH)
+from battle_city.config import FPS
 from battle_city.controller import Controller, GameStates
 from battle_city.level import Level, LevelsRepository
 from battle_city.view import Display, View
@@ -49,11 +50,15 @@ logger.debug("view was initialized")
 # current_level = 0
 logger.debug("Main loop started")
 game_state = GameStates.START
+clock = pygame.time.Clock()
 # Main loop
 while True:
     for event in pygame.event.get():
         game_state, level = controller.on_event(event, game_state)
         game_state = view.show(game_state, level, event)
+        pygame.display.update()
+        clock.tick(FPS)
+        # clock.tick(FPS)
     #     if event.type == pygame.QUIT:
     #         exit()
     #     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
