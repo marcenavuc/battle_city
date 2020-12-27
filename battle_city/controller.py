@@ -22,8 +22,8 @@ class GameStates(Enum):
 
 class Controller:
 
-    def __init__(self, levels_dir: str):
-        self.levels_repository = LevelsRepository(levels_dir)
+    def __init__(self):
+        self.levels_repository = LevelsRepository()
         self.current_level = 0
 
     def on_event(self, event: pygame.event, state: GameStates) \
@@ -35,11 +35,10 @@ class Controller:
                 return GameStates.PAUSE
             elif state == GameStates.PAUSE:
                 return GameStates.GAME
-
+        level = self.levels_repository[self.current_level]
         if state == GameStates.START:
             self.current_level = 0
         if state == GameStates.GAME:
-            level = self.levels_repository[self.current_level]
             if len(level["PLAYER"]) == 0 or len(level["COMANDCENTER"]) == 0:
                 logger.info("Player was loose")
                 return GameStates.DIE
@@ -56,4 +55,4 @@ class Controller:
         if state == GameStates.LOAD_SAVE:
             self.levels_repository.unserialize()
             return GameStates.GAME
-        return state
+        return state, level

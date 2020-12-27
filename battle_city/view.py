@@ -66,7 +66,7 @@ class Display:
         )
 
         save_button = self._draw_button(
-            "LOAD SAVE", self.width_center, 2 / 3 * self.height
+            "LOAD LATEST SAVE", self.width_center, 2 / 3 * self.height
         )
 
         if play_button.is_clicked() or save_button.is_clicked():
@@ -99,25 +99,25 @@ class Display:
 
         return menu_button.is_clicked(), level_button.is_clicked()
 
-    def save_screen(self, save_names):
-        height = self.height / 5
-        self.screen.fill(pygame.Color("black"))
-        return_button = self._draw_button(
-            "RETURN", self.width / 8, self.height - self.height / 8
-        )
-        buttons = []
-        for i, save_name in enumerate(save_names):
-            buttons.append(
-                self._draw_button(
-                    save_name, self.width_center, height * (i + 1)
-                )
-            )
-        index = -1
-        for i, button in enumerate(buttons):
-            if button.is_clicked():
-                index = i
-                break
-        return return_button.is_clicked(), index
+    # def save_screen(self, save_names):
+    #     height = self.height / 5
+    #     self.screen.fill(pygame.Color("black"))
+    #     return_button = self._draw_button(
+    #         "RETURN", self.width / 8, self.height - self.height / 8
+    #     )
+    #     buttons = []
+    #     for i, save_name in enumerate(save_names):
+    #         buttons.append(
+    #             self._draw_button(
+    #                 save_name, self.width_center, height * (i + 1)
+    #             )
+    #         )
+    #     index = -1
+    #     for i, button in enumerate(buttons):
+    #         if button.is_clicked():
+    #             index = i
+    #             break
+    #     return return_button.is_clicked(), index
 
     def pause_screen(self):
         self.screen.fill(pygame.Color("black"))
@@ -150,19 +150,30 @@ class View:
         self.clock = pygame.time.Clock()
         logger.debug("Initialized clock")
 
-    def show(self, state: GameStates):
+    def show(self, state: GameStates, level, event: pygame.event):
         if state == GameStates.GAME:
             self.menu_music.set_volume(0)
             self.game_music.set_volume(1)
-            self.display.game_screen()
+            self.display.game_screen(level, event)
         if state == GameStates.START:
             self.menu_music.set_volume(1)
             self.game_music.set_volume(0)
             is_game, is_save = self.display.main_screen()
             if is_game:
-                state = GameStates.GAME
+                return GameStates.GAME
             if is_save:
-                state = GameStates.SAVE
+                return GameStates.LOAD_SAVE
+        if state == GameStates.DIE:
+            is_start, is_game = self.display.die_screen()
+            if is_game:
+                return GameStates.RELOAD_LEVEL
+            if is_start:
+                return GameStates.START
+        if state == GameStates.PAUSE:
+            is_save = self.display.pause_screen()
+            if is_save:
+                return GameStates.SAVE_LEVEL
+
         pygame.display.update()
         self.clock.tick(FPS)
         return state

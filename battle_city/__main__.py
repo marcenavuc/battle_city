@@ -40,7 +40,7 @@ logger.debug("main parameters was initialized")
 controller = Controller()
 logger.debug("controller was initialized")
 view = View()
-logger.debug("display was initialized")
+logger.debug("view was initialized")
 
 
 
@@ -52,8 +52,8 @@ game_state = GameStates.START
 # Main loop
 while True:
     for event in pygame.event.get():
-        game_state = controller.on_event(event, game_state)
-        game_state = view.show(game_state)
+        game_state, level = controller.on_event(event, game_state)
+        game_state = view.show(game_state, level, event)
     #     if event.type == pygame.QUIT:
     #         exit()
     #     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
