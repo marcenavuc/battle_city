@@ -4,8 +4,7 @@ from typing import Tuple
 
 import pygame
 
-from battle_city import GameObject, Level
-from battle_city.config import CELL_SIZE
+from battle_city import Level
 
 logger = logging.getLogger(__name__)
 
@@ -39,38 +38,33 @@ class Display:
         self.screen = screen
         self.width, self.height = self.screen.get_size()
         self.font = font
-        self.x_center = self.width / 2
+        self.width_center = self.width / 2
         logger.debug("Display was created")
 
-    def _message_to_screen(
-        self, text: str, position: Tuple[float, float], color=pygame.Color("red")
-    ) -> Tuple[pygame.Rect, pygame.Rect]:
-        text_surface = self.font.render(text, True, color)
+    def _draw_text(self, text: str, x: float, y: float) \
+            -> Tuple[pygame.Rect, pygame.Rect]:
+        text_surface = self.font.render(text, True, pygame.Color("red"))
         text_rect = text_surface.get_rect()
-        text_rect.center = position
+        text_rect.center = (x, y)
         self.screen.blit(text_surface, text_rect)
-        return text_surface, text_rect
+        return text_rect
 
-    def _show_game_obj(self, game_obj: GameObject):
-        if game_obj.image:
-            position = game_obj.position
-            img = pygame.transform.scale(game_obj.image, CELL_SIZE)
-            self.screen.blit(img, position)
+    def _draw_button(self, text: str, x: float, y: float) -> Button:
+        return Button(self._draw_text(text, x, y))
 
     def main_screen(self):
         self.screen.fill(pygame.Color("black"))
 
-        self._message_to_screen("BATTLE CITY", (self.x_center, self.height / 3))
+        self._draw_text("BATTLE CITY", self.width_center, self.height / 3)
 
-        play_button = Button(
-            self._message_to_screen("PLAY", (self.x_center, self.height / 2))[1]
+        play_button = self._draw_button(
+            "PLAY", self.width_center, self.height / 2
         )
 
-        save_button = Button(
-            self._message_to_screen("LOAD SAVE", (self.x_center, self.height / 3 * 2))[
-                1
-            ]
+        save_button = self._draw_button(
+            "LOAD SAVE", self.width_center, 2 / 3 * self.height
         )
+
         if play_button.is_clicked() or save_button.is_clicked():
             logger.debug("Main screen was ended")
 
@@ -84,15 +78,16 @@ class Display:
 
     def die_screen(self):
         self.screen.fill(pygame.Color("black"))
-        self._message_to_screen("WASTED", (self.x_center, self.height / 3))
+        self._draw_text("WASTED", self.width_center, self.height / 3)
 
-        level_button = Button(
-            self._message_to_screen("PLAY AGAIN", (self.x_center, self.height / 2))[1]
+        level_button = self._draw_button(
+            "PLAY AGAIN", self.width_center, self.height / 2
         )
 
-        menu_button = Button(
-            self._message_to_screen("MENU", (self.x_center, self.height / 3 * 2))[1]
+        menu_button = self._draw_button(
+            "MENU", self.width_center, self.height / 3 * 2
         )
+
         if menu_button.is_clicked():
             logger.debug("Main screen was ended")
         if level_button.is_clicked():
@@ -103,19 +98,14 @@ class Display:
     def save_screen(self, save_names):
         height = self.height / 5
         self.screen.fill(pygame.Color("black"))
-        return_button = Button(
-            self._message_to_screen(
-                "RETURN", (self.width / 8, self.height - self.height / 8)
-            )[1]
+        return_button = self._draw_button(
+            "RETURN", self.width / 8, self.height - self.height / 8
         )
         buttons = []
         for i, save_name in enumerate(save_names):
             buttons.append(
-                Button(
-                    self._message_to_screen(
-                        save_name[: save_name.find(".txt")],
-                        (self.x_center, height * (i + 1)),
-                    )[1]
+                self._draw_button(
+                    save_name, self.width_center, height * (i + 1)
                 )
             )
         index = -1
@@ -127,10 +117,9 @@ class Display:
 
     def pause_screen(self):
         self.screen.fill(pygame.Color("black"))
-        self._message_to_screen("PAUSE", (self.x_center, self.height / 3))
-        save_button = Button(
-            self._message_to_screen("SAVE GAME", (self.x_center, self.height / 3 * 2))[
-                1
-            ]
+        self._draw_text("PAUSE", self.width_center, self.height / 3)
+        save_button = self._draw_button(
+            "SAVE GAME", self.width_center, 2 / 3 * self.height
         )
         return save_button.is_clicked()
+

@@ -78,6 +78,8 @@ while True:
             logger.info("Player wins")
             current_level += 1
         else:
+            # for game_group in level:
+            #     game_group.update(event, level)
             display.game_screen(level, event)
     if state == ViewStates.DIE:
         BACKGROUND_MUSIC.set_volume(0)
