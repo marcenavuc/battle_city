@@ -70,15 +70,16 @@ class LevelsRepository:
 
         return self.latest_level
 
-    def load_level(self, num: int) -> "Level":
-        path = self.levels_paths[num]
+    def load_level(self, index: int) -> "Level":
+        path = self.levels_paths[index]
         with open(path) as file:
             lines = file.readlines()
 
-        logger.debug(f"loaded level {num}")
+        logger.debug(f"loaded level {index}")
         return Level(*self._parse_to_map(lines))
 
     def reload(self, index: int):
+        logger.debug(f"reloading level {index}")
         if self.latest_level is not None:
             self.latest_level = self.load_level(index)
 
