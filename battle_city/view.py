@@ -4,18 +4,20 @@ from typing import Tuple
 
 import pygame
 
-from battle_city import GameObject, Level
-from battle_city.config import CELL_SIZE
+from battle_city import Level
+from battle_city.config import GAME_MUSIC_PATH, MENU_MUSIC_PATH, FONTS_PATH
+from battle_city.config import DISPLAY_SIZE, FONT_SIZE, FPS
+from battle_city.controller import GameStates
 
 logger = logging.getLogger(__name__)
 
-
-class ViewStates(Enum):
-    GAME = auto()
-    START = auto()
-    DIE = auto()
-    SAVE = auto()
-    PAUSE = auto()
+#
+# class ViewStates(Enum):
+#     GAME = auto()
+#     START = auto()
+#     DIE = auto()
+#     SAVE = auto()
+#     PAUSE = auto()
 
 
 class Button:
@@ -29,48 +31,44 @@ class Button:
     def is_moused(self) -> bool:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         return (
-            self.rect.x < mouse_x < self.rect.bottomright[0]
-            and self.rect.y < mouse_y < self.rect.y + self.rect.height
+                self.rect.x < mouse_x < self.rect.x + self.rect.width
+                and self.rect.y < mouse_y < self.rect.y + self.rect.height
         )
 
 
 class Display:
-    def __init__(self, screen: pygame.display, font=None):
-        self.screen = screen
+
+    def __init__(self):
+        self.screen = pygame.display.set_mode(DISPLAY_SIZE, pygame.RESIZABLE)
         self.width, self.height = self.screen.get_size()
-        self.font = font
-        self.x_center = self.width / 2
+        self.font = pygame.font.Font(FONTS_PATH, FONT_SIZE)
+        self.width_center = self.width / 2
         logger.debug("Display was created")
 
-    def _message_to_screen(
-        self, text: str, position: Tuple[float, float], color=pygame.Color("red")
-    ) -> Tuple[pygame.Rect, pygame.Rect]:
-        text_surface = self.font.render(text, True, color)
+    def _draw_text(self, text: str, x: float, y: float) \
+            -> Tuple[pygame.Rect, pygame.Rect]:
+        text_surface = self.font.render(text, True, pygame.Color("red"))
         text_rect = text_surface.get_rect()
-        text_rect.center = position
+        text_rect.center = (x, y)
         self.screen.blit(text_surface, text_rect)
-        return text_surface, text_rect
+        return text_rect
 
-    def _show_game_obj(self, game_obj: GameObject):
-        if game_obj.image:
-            position = game_obj.position
-            img = pygame.transform.scale(game_obj.image, CELL_SIZE)
-            self.screen.blit(img, position)
+    def _draw_button(self, text: str, x: float, y: float) -> Button:
+        return Button(self._draw_text(text, x, y))
 
     def main_screen(self):
         self.screen.fill(pygame.Color("black"))
 
-        self._message_to_screen("BATTLE CITY", (self.x_center, self.height / 3))
+        self._draw_text("BATTLE CITY", self.width_center, self.height / 3)
 
-        play_button = Button(
-            self._message_to_screen("PLAY", (self.x_center, self.height / 2))[1]
+        play_button = self._draw_button(
+            "PLAY", self.width_center, self.height / 2
         )
 
-        save_button = Button(
-            self._message_to_screen("LOAD SAVE", (self.x_center, self.height / 3 * 2))[
-                1
-            ]
+        save_button = self._draw_button(
+            "LOAD SAVE", self.width_center, 2 / 3 * self.height
         )
+
         if play_button.is_clicked() or save_button.is_clicked():
             logger.debug("Main screen was ended")
 
@@ -84,15 +82,16 @@ class Display:
 
     def die_screen(self):
         self.screen.fill(pygame.Color("black"))
-        self._message_to_screen("WASTED", (self.x_center, self.height / 3))
+        self._draw_text("WASTED", self.width_center, self.height / 3)
 
-        level_button = Button(
-            self._message_to_screen("PLAY AGAIN", (self.x_center, self.height / 2))[1]
+        level_button = self._draw_button(
+            "PLAY AGAIN", self.width_center, self.height / 2
         )
 
-        menu_button = Button(
-            self._message_to_screen("MENU", (self.x_center, self.height / 3 * 2))[1]
+        menu_button = self._draw_button(
+            "MENU", self.width_center, self.height / 3 * 2
         )
+
         if menu_button.is_clicked():
             logger.debug("Main screen was ended")
         if level_button.is_clicked():
@@ -103,19 +102,14 @@ class Display:
     def save_screen(self, save_names):
         height = self.height / 5
         self.screen.fill(pygame.Color("black"))
-        return_button = Button(
-            self._message_to_screen(
-                "RETURN", (self.width / 8, self.height - self.height / 8)
-            )[1]
+        return_button = self._draw_button(
+            "RETURN", self.width / 8, self.height - self.height / 8
         )
         buttons = []
         for i, save_name in enumerate(save_names):
             buttons.append(
-                Button(
-                    self._message_to_screen(
-                        save_name[: save_name.find(".txt")],
-                        (self.x_center, height * (i + 1)),
-                    )[1]
+                self._draw_button(
+                    save_name, self.width_center, height * (i + 1)
                 )
             )
         index = -1
@@ -127,10 +121,48 @@ class Display:
 
     def pause_screen(self):
         self.screen.fill(pygame.Color("black"))
-        self._message_to_screen("PAUSE", (self.x_center, self.height / 3))
-        save_button = Button(
-            self._message_to_screen("SAVE GAME", (self.x_center, self.height / 3 * 2))[
-                1
-            ]
+        self._draw_text("PAUSE", self.width_center, self.height / 3)
+        save_button = self._draw_button(
+            "SAVE GAME", self.width_center, 2 / 3 * self.height
         )
         return save_button.is_clicked()
+
+
+class View:
+
+    def __init__(self):
+        pygame.init()
+        pygame.font.init()
+        pygame.mixer.init()
+        logger.debug("Initialized pygame modules")
+
+        self.display = Display()
+        logger.debug("Initialized display")
+
+        self.menu_music = pygame.mixer.Sound(MENU_MUSIC_PATH)
+        self.game_music = pygame.mixer.Sound(GAME_MUSIC_PATH)
+        self.menu_music.set_volume(0)
+        self.game_music.set_volume(0)
+        self.menu_music.play()
+        self.game_music.play()
+        logger.debug("Initialized music")
+
+        self.clock = pygame.time.Clock()
+        logger.debug("Initialized clock")
+
+    def show(self, state: GameStates):
+        if state == GameStates.GAME:
+            self.menu_music.set_volume(0)
+            self.game_music.set_volume(1)
+            self.display.game_screen()
+        if state == GameStates.START:
+            self.menu_music.set_volume(1)
+            self.game_music.set_volume(0)
+            is_game, is_save = self.display.main_screen()
+            if is_game:
+                state = GameStates.GAME
+            if is_save:
+                state = GameStates.SAVE
+        pygame.display.update()
+        self.clock.tick(FPS)
+        return state

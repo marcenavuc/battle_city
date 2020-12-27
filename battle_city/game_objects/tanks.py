@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Tank(Movable):
-    image = "battle_city/media/images/tank.png"
+    image = "media/images/tank.png"
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
@@ -46,7 +46,7 @@ class Tank(Movable):
 
 
 class EnemyTank(Tank):
-    image = "battle_city/media/images/tank.png"
+    image = "media/images/tank.png"
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
@@ -92,7 +92,7 @@ class EnemyTank(Tank):
 
 
 class SpeedTank(EnemyTank):
-    image = "battle_city/media/images/tank.png"
+    image = "media/images/tank.png"
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
@@ -100,7 +100,7 @@ class SpeedTank(EnemyTank):
 
 
 class HeavyTank(EnemyTank):
-    image = "battle_city/media/images/heavy_tank.png"
+    image = "media/images/heavy_tank.png"
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
@@ -109,7 +109,7 @@ class HeavyTank(EnemyTank):
 
 
 class RushTank(EnemyTank):
-    image = "battle_city/media/images/rush_tank.png"
+    image = "media/images/rush_tank.png"
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)

@@ -6,7 +6,7 @@ from battle_city.game_objects import GameObject
 
 
 class Bonus(GameObject):
-    image = "battle_city/media/images/bonus_hat.png"
+    image = "media/images/bonus_hat.png"
 
     def __init__(self, position, *args, **kwargs):
         super().__init__(position, *args, **kwargs)
@@ -23,21 +23,21 @@ class Bonus(GameObject):
 
 
 class HealthBonus(Bonus):
-    image = "battle_city/media/images/bonus_hat.png"
+    image = "media/images/bonus_hat.png"
 
     def modify_player(self, player, level):
         player.health += 1
 
 
 class SpeedBonus(Bonus):
-    image = "battle_city/media/images/bonus_showel.png"
+    image = "media/images/bonus_showel.png"
 
     def modify_player(self, player, level):
         player.speed *= 2
 
 
 class RandomKill(Bonus):
-    image = "battle_city/media/images/bonus_tank.png"
+    image = "media/images/bonus_tank.png"
 
     def modify_player(self, player, level):
         for tank in level["TANKS"]:

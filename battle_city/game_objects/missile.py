@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Missile(Movable):
-    image = "battle_city/media/images/missile.png"
+    image = "media/images/missile.png"
 
     def __init__(self, position, direction: Directions, *args, **kwargs):
         super().__init__(position, *args, **kwargs)

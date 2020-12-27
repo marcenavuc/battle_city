@@ -6,6 +6,7 @@ from battle_city.game_objects.tanks import Tank
 
 
 class Player(Tank):
+    image = "media/images/player.png"
     KEY_MAP = {
         pygame.K_RIGHT: Directions.RIGHT,
         pygame.K_LEFT: Directions.LEFT,
@@ -15,7 +16,7 @@ class Player(Tank):
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
-        self.sprite = pygame.image.load("battle_city/media/images/player.png")
+        self.sprite = pygame.image.load(Player.image)
         self.sprite = pygame.transform.scale(self.sprite, CELL_SIZE)
         self.image = pygame.transform.rotate(self.sprite, 0)
 

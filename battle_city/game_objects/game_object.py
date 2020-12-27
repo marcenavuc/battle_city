@@ -28,15 +28,12 @@ class GameObject(DirtySprite):
     def __dict__(self):
         return {"x": self.rect.x, "y": self.rect.y}
 
-    def __str__(self):
-        return self.__dict__()
-
     def update(self, event: pygame.event, level, *args):
         pass
 
     @staticmethod
     def in_borders(position: pygame.rect.Rect, level) -> bool:
-        return 0 <= position.x <= level.max_x and 0 <= position.y <= level.max_y
+        return 0 <= position.x <= level.width and 0 <= position.y <= level.height
 
 
 class Directions(Enum):
@@ -47,11 +44,11 @@ class Directions(Enum):
 
     def get_angle(self):
         return {
-            "UP": 0,
-            "RIGHT": -90,
-            "LEFT": 90,
-            "DOWN": 180,
-        }.get(self.name)
+            self.UP: 0,
+            self.RIGHT: -90,
+            self.LEFT: 90,
+            self.DOWN: 180,
+        }.get(self)
 
     @staticmethod
     def random_direction():
@@ -77,6 +74,8 @@ class Movable(GameObject):
         return self.rect.move(*step)
 
     def __dict__(self):
-        return {"x": self.rect.x,
-                "y": self.rect.y,
-                "direction": self.direction.name}
+        return {
+            "x": self.rect.x,
+            "y": self.rect.y,
+            "direction": self.direction.name
+        }
