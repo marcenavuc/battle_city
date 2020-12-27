@@ -53,11 +53,15 @@ game_state = GameStates.START
 clock = pygame.time.Clock()
 # Main loop
 while True:
+    # for event in pygame.event.get():
+    # for event in pygame.event.get():
+    #     pass
+    # event = list(pygame.event.get())[-1]
     for event in pygame.event.get():
         game_state, level = controller.on_event(event, game_state)
-        game_state = view.show(game_state, level, event)
-        pygame.display.update()
-        clock.tick(FPS)
+    game_state = view.show(game_state, level, event)
+    pygame.display.update()
+    clock.tick(FPS)
         # clock.tick(FPS)
     #     if event.type == pygame.QUIT:
     #         exit()
