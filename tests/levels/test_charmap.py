@@ -1,13 +1,13 @@
 import pytest
 
 from battle_city.game_objects.blocks import Walls, Iron
-from battle_city.game_objects.bonuses import HealthBonus, SpeedBonus
+from battle_city.game_objects.bonuses import LifeBonus, SpeedBonus
 from battle_city.level import CharMapEnum
 
 
 @pytest.mark.parametrize("symbol, result", [
     ("W", Walls),
-    ("B", HealthBonus),
+    ("B", LifeBonus),
     ("I", Iron),
     ("V", SpeedBonus)
 ])

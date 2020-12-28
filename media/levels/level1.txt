@@ -19,7 +19,7 @@ IIIIII......LL......IIIIII
 ..WW..H.WW......WW...T....
 ..WW....WW......WW........
 ..WWW................WWWLL
-..WWW.....B..........WWWLL
+..WWW.....L..........WWWLL
 ....WW..............LLLLLL
 ..F........WWWW.....LLLLLL
 ..F.....P..WC.W.......LLLL

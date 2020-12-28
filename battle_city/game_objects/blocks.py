@@ -5,7 +5,11 @@ from battle_city.game_objects.game_object import GameObject
 from battle_city.utils import Vector
 
 
-class Wall(GameObject):
+class Block(GameObject):
+    pass
+
+
+class Wall(Block):
     image = "media/images/wall.png"
     HEIGHT = CELL_HEIGHT // 2
     WIDTH = CELL_WIDTH // 2
@@ -27,19 +31,19 @@ class Walls:
         return walls
 
 
-class Water(GameObject):
+class Aqua(Block):
     image = "media/images/water.png"
 
 
-class Leaves(GameObject):
+class GreenBrush(Block):
     image = "media/images/leaves.png"
 
 
-class Iron(GameObject):
+class Iron(Block):
     image = "media/images/iron.png"
 
 
-class Base(GameObject):
+class CENTER(Block):
     image = "media/images/base.png"
 
 

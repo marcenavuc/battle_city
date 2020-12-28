@@ -1,7 +1,7 @@
 import pytest
 
 from battle_city.game_objects import Player
-from battle_city.game_objects.blocks import Iron, Leaves, Water, Base
+from battle_city.game_objects.blocks import Iron, GreenBrush, Aqua, CENTER
 from battle_city.game_objects.tanks import Tank
 from battle_city.level import LevelsRepository
 from battle_city.utils import Vector
@@ -22,9 +22,9 @@ def test_level_repository_init(path, result):
 @pytest.mark.parametrize("symbol, result", [
     (".", None),
     ("I", Iron),
-    ("L", Leaves),
-    ("A", Water),
-    ("C", Base),
+    ("L", GreenBrush),
+    ("A", Aqua),
+    ("C", CENTER),
     ("T", Tank),
     ("P", Player),
     ("Simple wrong symbol", None)

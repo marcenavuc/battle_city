@@ -6,7 +6,7 @@ import pygame
 
 from battle_city.config import RESPAWN_TIME
 from battle_city.game_objects import Missile
-from battle_city.game_objects.game_object import Directions, Movable
+from battle_city.game_objects.game_object import Directions, Movable, GameObject
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +25,18 @@ class Tank(Movable):
 
     def set_position(self, position: pygame.rect.Rect, level) \
             -> pygame.rect.Rect:
-        if position.collidelist(level["FLOOR"].sprites()) >= 0:
+        # if self.is_collide(position, )
+        if self.is_collidelist(position, level.floor) >= 0:
+        # if position.collidelist(level.floor.sprites()) >= 0:
             self.speed = self.velocity / 2
         else:
             self.speed = self.velocity
         if (
             self.in_borders(position, level)
-            and position.collidelist(level["WALL"].sprites()) < 0
-            and position.collidelist(level["AQUA"].sprites()) < 0
-            and position.collidelist(level["IRON"].sprites()) < 0
+            # and position.collidelist(level["WALL"].sprites()) < 0
+            # and position.collidelist(level["AQUA"].sprites()) < 0
+            # and position.collidelist(level["IRON"].sprites()) < 0
+            and self.is_collidelist(position, level.blocks) < 0
         ):
             return position
         return self.rect
@@ -42,7 +45,8 @@ class Tank(Movable):
         missile_position = self.move(self.direction, speed=20)
         if self.is_shot and missile_position.colliderect(missile_position):
             missile = Missile(missile_position, self.direction)
-            level.groups["MISSILE"].add(missile)
+            # level.groups["MISSILE"].add(missile)
+            level.missiles.append(missile)
 
 
 class EnemyTank(Tank):
@@ -55,9 +59,9 @@ class EnemyTank(Tank):
         if abs(self.time_of_creation - time.time()) < self.period_duration:
             self.random_walk(level)
         elif abs(self.time_of_creation - time.time()) < 2*self.period_duration:
-            self.move_to_obj("PLAYER", level)
+            self.move_to_obj(level.player, level)
         else:
-            self.move_to_obj("COMMANDCENTER", level)
+            self.move_to_obj(level.command_center, level)
 
     def random_walk(self, level):
         rand_number = random.randint(1, 1000)
@@ -70,8 +74,8 @@ class EnemyTank(Tank):
         new_position = self.move(direction)
         self.rect = self.set_position(new_position, level)
 
-    def move_to_obj(self, key: str, level):
-        obj = level[key].sprites()[0]
+    def move_to_obj(self, obj: GameObject, level):
+        # obj = level[key].sprites()[0]
         direction = self.direction
         if self.rect.y + self.speed < obj.rect.y:
             direction = Directions.DOWN
@@ -116,4 +120,4 @@ class RushTank(EnemyTank):
         self.speed = 5
 
     def update(self, event: pygame.event, level, *args):
-        self.move_to_obj("COMMANDCENTER", level)
+        self.move_to_obj(level.command_center, level)

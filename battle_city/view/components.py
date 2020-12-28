@@ -47,6 +47,11 @@ class Display:
     def _draw_button(self, text: str, x: float, y: float) -> Button:
         return Button(self._draw_text(text, x, y))
 
+    def _draw_gameobject(self, game_obj: "GameObject"):
+        # game_obj.draw(self.screen)
+        self.screen.blit(game_obj.image, game_obj.rect)
+
+
     def main_screen(self):
         self.screen.fill(pygame.Color("black"))
 
@@ -67,8 +72,9 @@ class Display:
 
     def game_screen(self, level: Level):
         self.screen.fill(pygame.Color("black"))
-        for game_group in level:
-            game_group.draw(self.screen)
+        for game_obj in level:
+            # game_group.image.draw(self.screen)
+            self._draw_gameobject(game_obj)
 
     def die_screen(self):
         self.screen.fill(pygame.Color("black"))

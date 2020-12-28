@@ -32,18 +32,19 @@ class Controller:
         if event.type == pygame.QUIT:
             exit()
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            return self.switch_pause()
+            return self.switch_pause(state), level
 
         if state == GameStates.START:
             self.current_level = 0
             return GameStates.START, level
         if state == GameStates.GAME:
-            for game_group in level:
-                game_group.update(event, level)
-            if len(level["PLAYER"]) == 0 or len(level["COMANDCENTER"]) == 0:
+            for obj in level:
+                # print(obj)
+                obj.update(event, level)
+            if level.player is None or level.command_center is None:
                 logger.info("Player was loose")
                 return GameStates.DIE, level
-            elif len(level["TANKS"]) == 0:
+            elif len(level.tanks) == 0:
                 logger.info("Player wins")
                 self.current_level += 1
         else:
@@ -56,8 +57,8 @@ class Controller:
             return GameStates.GAME, level
         return state, level
 
-    def switch_pause(self, state, level):
+    def switch_pause(self, state):
         if state == GameStates.GAME:
-            return GameStates.PAUSE, level
+            return GameStates.PAUSE
         elif state == GameStates.PAUSE:
-            return GameStates.GAME, level
+            return GameStates.GAME
