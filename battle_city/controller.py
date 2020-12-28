@@ -1,6 +1,6 @@
 from enum import Enum, auto
 import logging
-from typing import Tuple
+from typing import Tuple, List
 
 import pygame
 
@@ -25,21 +25,24 @@ class Controller:
     def __init__(self):
         self.levels_repository = LevelsRepository()
         self.current_level = 0
+        self.last_event = None
 
-    def on_event(self, event: pygame.event, state: GameStates) \
+    def on_event(self, events: List, state: GameStates) \
             -> Tuple[GameStates, "Level"]:
         level = self.levels_repository[self.current_level]
-        if event.type == pygame.QUIT:
-            exit()
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            return self.switch_pause(state), level
+        for event in events:
+            self.last_event = event
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return self.switch_pause(state), level
 
         if state == GameStates.START:
             self.current_level = 0
             return GameStates.START, level
         if state == GameStates.GAME:
             for obj in level:
-                obj.update(event, level)
+                obj.update(self.last_event, level)
             if level.player is None or level.command_center is None:
                 logger.info("Player was loose")
                 return GameStates.DIE, level

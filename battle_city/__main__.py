@@ -23,9 +23,7 @@ logger.debug("Main loop started")
 game_state = GameStates.START
 # Main loop
 while True:
-    for event in pygame.event.get():
-        pass
-    game_state, level = controller.on_event(event, game_state)
+    game_state, level = controller.on_event(pygame.event.get(), game_state)
     game_state = view.show(game_state, level)
 
 logger.debug("game ended")
