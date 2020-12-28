@@ -41,14 +41,9 @@ class Controller:
             self.current_level = 0
             return GameStates.START, level
         if state == GameStates.GAME:
-            for obj in level:
-                obj.update(self.last_event, level)
-            if level.player is None or level.command_center is None:
-                logger.info("Player was loose")
-                return GameStates.DIE, level
-            elif len(level.tanks) == 0:
-                logger.info("Player wins")
-                self.current_level += 1
+            new_state = self.play_game(level)
+            if new_state is not None:
+                return new_state
         else:
             if state == GameStates.RELOAD_LEVEL:
                 self.levels_repository.reload(self.current_level)
@@ -64,3 +59,13 @@ class Controller:
             return GameStates.PAUSE
         elif state == GameStates.PAUSE:
             return GameStates.GAME
+
+    def play_game(self, level):
+        for obj in level:
+            obj.update(self.last_event, level)
+        if level.player is None or level.command_center is None:
+            logger.info("Player was loose")
+            return GameStates.DIE, level
+        elif len(level.tanks) == 0:
+            logger.info("Player wins")
+            self.current_level += 1
