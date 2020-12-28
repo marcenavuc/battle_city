@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple, Iterator
 
 from battle_city.config import CELL_HEIGHT, CELL_WIDTH, LEVELS_PATH
 from battle_city.game_objects import GameObject, Missile, Player
-from battle_city.game_objects.blocks import (CENTER, Iron, GreenBrush, Wall, Walls,
+from battle_city.game_objects.blocks import (CENTER, Iron, GreenBrush, Wall,
                                              Aqua, Floor, Block)
 from battle_city.game_objects.bonuses import (LifeBonus, RandomKill,
                                               SpeedBonus, Bonus)
@@ -144,6 +144,7 @@ class Level:
         self.player = game_objs[Player.__name__][0]
         self.command_center = game_objs[CENTER.__name__][0]
         self.floor = game_objs[Floor.__name__]
+        self.brush = game_objs[GreenBrush.__name__]
         # self.groups["TANKS"] = Group()
         # for tank_type in ["TANK", "SPEEDTANK", "HEAVYTANK", "RUSHTANK"]:
         #     self.groups["TANKS"].add(self.groups[tank_type].sprites())
@@ -167,6 +168,10 @@ class Level:
         collection = []
         for objs in self.game_objs.values():
             collection.extend(objs)
+        # for objs in [self.blocks, self.tanks, self.missiles, self.bonuses]:
+        #     collection.extend(objs)
+        # collection.append(self.player)
+        # collection.append(self.brush)
         return iter(collection)
         # return iter(list(*self.game_objs.values()))
 

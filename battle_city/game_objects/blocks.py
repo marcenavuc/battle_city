@@ -11,32 +11,26 @@ class Block(GameObject):
 
 class Wall(Block):
     image = "media/images/wall.png"
-    HEIGHT = CELL_HEIGHT // 2
-    WIDTH = CELL_WIDTH // 2
-    SIZE = (HEIGHT, WIDTH)
+    # HEIGHT = CELL_HEIGHT // 2
+    # WIDTH = CELL_WIDTH // 2
+    # SIZE = (HEIGHT, WIDTH)
 
     def __init__(self, position, *args, **kwars):
         super().__init__(position, *args, **kwars)
-        self.image = pygame.transform.scale(self.image, Wall.SIZE)
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = position.x, position.y
+        self.health = 4
 
 
-class Walls:
-    def __new__(cls, position: Vector):
-        walls = []
-        for y in [-Wall.HEIGHT / 2, Wall.HEIGHT / 2]:
-            for x in [-Wall.WIDTH / 2, Wall.WIDTH / 2]:
-                walls.append(Wall(position + Vector(x, y)))
-        return walls
+# class Walls:
+#     def __new__(cls, position: Vector):
+#         walls = []
+#         for y in [-Wall.HEIGHT / 2, Wall.HEIGHT / 2]:
+#             for x in [-Wall.WIDTH / 2, Wall.WIDTH / 2]:
+#                 walls.append(Wall(position + Vector(x, y)))
+#         return walls
 
 
 class Aqua(Block):
     image = "media/images/water.png"
-
-
-class GreenBrush(Block):
-    image = "media/images/leaves.png"
 
 
 class Iron(Block):
@@ -45,6 +39,10 @@ class Iron(Block):
 
 class CENTER(Block):
     image = "media/images/base.png"
+
+
+class GreenBrush(GameObject):
+    image = "media/images/leaves.png"
 
 
 class Floor(GameObject):
