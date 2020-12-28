@@ -40,13 +40,11 @@ class GameObject(DirtySprite):
 
     @staticmethod
     def is_collide(obj1: "GameObject", obj2: "GameObject"):
-        # print(obj1, obj2)
         return obj1.rect.colliderect(obj2.rect)
 
     @staticmethod
     def is_collidelist(obj: Union["GameObject", pygame.rect.Rect],
                        objects: List["GameObject"]) -> int:
-        # print(objects)
         rects = [obj.rect for obj in objects]
         if isinstance(obj, pygame.rect.Rect):
             return obj.collidelist(rects)

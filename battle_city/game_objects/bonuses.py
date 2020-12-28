@@ -15,7 +15,7 @@ class Bonus(GameObject):
         if self.is_collide(self, level.player):
         # if self.rect.colliderect(level.player.rect):
             self.modify_player(level.player, level)
-            self.kill()
+            level.bonuses.remove(self)
 
     def modify_player(self, player, level):
         pass
@@ -41,4 +41,4 @@ class RandomKill(Bonus):
     def modify_player(self, player, level):
         for tank in level.tanks:
             if random.randint(0, 1):
-                tank.kill()
+                level.tanks.remove(tank)

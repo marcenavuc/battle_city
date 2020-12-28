@@ -19,7 +19,7 @@ class Tank(Movable):
         self.velocity = 5
         self.health = 1
         self.speed = 5
-        self.is_shot = True
+        self.is_shot = False
         self.period_duration = RESPAWN_TIME / 8
         self.time_of_creation = time.time()
 

@@ -127,9 +127,8 @@ class Level:
         self.width = width
         self.height = height
         # GameObjects
-        self.missiles = []
 
-        self.tanks = []
+        self.tanks = game_objs[EnemyTank.__name__]
         for tank_cls in EnemyTank.__subclasses__():
             self.tanks.extend(game_objs[tank_cls.__name__])
 
@@ -141,9 +140,11 @@ class Level:
         for bonus_cls in Bonus.__subclasses__():
             self.bonuses.extend(game_objs[bonus_cls.__name__])
 
+        self.floor = game_objs[Floor.__name__]
         self.player = game_objs[Player.__name__][0]
         self.command_center = game_objs[CENTER.__name__][0]
-        self.floor = game_objs[Floor.__name__]
+        self.missiles = game_objs[Missile.__name__]
+        self.walls = game_objs[Wall.__name__]
         self.brush = game_objs[GreenBrush.__name__]
         # self.groups["TANKS"] = Group()
         # for tank_type in ["TANK", "SPEEDTANK", "HEAVYTANK", "RUSHTANK"]:
@@ -166,13 +167,17 @@ class Level:
 
     def __iter__(self) -> Iterator["GameObject"]:
         collection = []
-        for objs in self.game_objs.values():
+        # for objs in self.game_objs.values():
+        for objs in [self.blocks, self.tanks, self.missiles, self.bonuses,
+                     self.floor, self.brush]:
             collection.extend(objs)
+        collection.append(self.player)
+        collection.append(self.command_center)
+        return iter(collection)
         # for objs in [self.blocks, self.tanks, self.missiles, self.bonuses]:
         #     collection.extend(objs)
         # collection.append(self.player)
         # collection.append(self.brush)
-        return iter(collection)
         # return iter(list(*self.game_objs.values()))
 
     # def serialize(self, text: str):
