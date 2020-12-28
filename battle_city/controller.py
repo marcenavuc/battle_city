@@ -39,7 +39,6 @@ class Controller:
             return GameStates.START, level
         if state == GameStates.GAME:
             for obj in level:
-                # print(obj)
                 obj.update(event, level)
             if level.player is None or level.command_center is None:
                 logger.info("Player was loose")

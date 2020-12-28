@@ -2,46 +2,17 @@ import json
 import logging
 import os
 from datetime import datetime
-from enum import Enum
-from typing import Dict, List, Tuple, Iterator
-
-# from pygame.sprite import Group
+from typing import Dict, List, Iterator
 
 from battle_city.config import CELL_HEIGHT, CELL_WIDTH, LEVELS_PATH
 from battle_city.game_objects import GameObject, Missile, Player
-from battle_city.game_objects.blocks import (CENTER, Iron, GreenBrush, Wall,
-                                             Aqua, Floor, Block)
-from battle_city.game_objects.bonuses import (LifeBonus, RandomKill,
-                                              SpeedBonus, Bonus)
-from battle_city.game_objects.tanks import (EnemyTank, HeavyTank, RushTank,
-                                            SpeedTank)
+from battle_city.game_objects.blocks import (CENTER, GreenBrush, Wall,
+                                             Floor, Block)
+from battle_city.game_objects.bonuses import Bonus
+from battle_city.game_objects.tanks import EnemyTank
 from battle_city.utils import Vector
 
 logger = logging.getLogger(__name__)
-
-
-# class CharMapEnum(Enum):
-#     WALL = Walls
-#     AQUA = Water
-#     IRON = Iron
-#     FLOOR = Floor
-#     COMANDCENTER = Base
-#     PLAYER = Player
-#     TANK = EnemyTank
-#     SPEEDTANK = SpeedTank
-#     HEAVYTANK = HeavyTank
-#     RUSHTANK = RushTank
-#     MISSILE = Missile
-#     BONUS = HealthBonus
-#     VELOCITYBONUS = SpeedBonus
-#     KILLBONUS = RandomKill
-#     LEAVES = Leaves
-#
-#     @classmethod
-#     def get_from_symbol(cls, symbol: str):
-#         for item in cls:
-#             if item.name[0] == symbol:
-#                 return item
 
 
 class LevelsRepository:
@@ -70,7 +41,6 @@ class LevelsRepository:
             lines = file.readlines()
 
         logger.debug(f"loaded level {index}")
-        # return Level(*self._parse_to_map(lines))
         return self._parse_level(lines)
 
     def reload(self, index: int):
@@ -80,7 +50,6 @@ class LevelsRepository:
 
     @classmethod
     def _parse_level(cls, lines: List[str]) -> "Level":
-        # groups = {group_type.name: Group() for group_type in CharMapEnum}
         objects = {name: [] for name in GameObject.registry.keys()}
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
@@ -89,7 +58,6 @@ class LevelsRepository:
                 if game_obj is None:
                     continue
                 objects[game_obj.__class__.__name__].append(game_obj)
-                # objects[CharMapEnum.get_from_symbol(symbol).name].add(game_obj)
 
         return Level(objects, x * CELL_WIDTH, y * CELL_HEIGHT)
 
@@ -99,8 +67,6 @@ class LevelsRepository:
 
     @staticmethod
     def _get_from_symbol(symbol: str, position: Vector) -> GameObject:
-        # obj = CharMapEnum.get_from_symbol(symbol)
-        # return None if obj is None else obj.value(position)
         game_class = list(filter(lambda name: name.startswith(symbol),
                                  GameObject.registry.keys()))
         return None if game_class == [] else GameObject.registry[
@@ -146,39 +112,17 @@ class Level:
         self.missiles = game_objs[Missile.__name__]
         self.walls = game_objs[Wall.__name__]
         self.brush = game_objs[GreenBrush.__name__]
-        # self.groups["TANKS"] = Group()
-        # for tank_type in ["TANK", "SPEEDTANK", "HEAVYTANK", "RUSHTANK"]:
-        #     self.groups["TANKS"].add(self.groups[tank_type].sprites())
-        #     self.groups[tank_type].empty()
-        #
-        # self.groups["BONUSES"] = Group()
-        # for tank_type in ["BONUS", "VELOCITYBONUS", "KILLBONUS"]:
-        #     self.groups["BONUSES"].add(self.groups[tank_type].sprites())
-        #
-        # leaves_group = self.groups.pop("LEAVES", Group())
-        # self.groups["LEAVES"] = leaves_group
         logger.debug("Level was created")
         logger.debug(f"Loaded this objects {self.game_objs}")
-        # logger.debug(GameObject.registry)
-        # logger.debug(EnemyTank.__subclasses__())
-
-    # def __getitem__(self, group_name: str) -> Group:
-    #     return self.groups.get(group_name)
 
     def __iter__(self) -> Iterator["GameObject"]:
         collection = []
-        # for objs in self.game_objs.values():
         for objs in [self.blocks, self.tanks, self.missiles, self.bonuses,
                      self.floor, self.brush]:
             collection.extend(objs)
         collection.append(self.player)
         collection.append(self.command_center)
         return iter(collection)
-        # for objs in [self.blocks, self.tanks, self.missiles, self.bonuses]:
-        #     collection.extend(objs)
-        # collection.append(self.player)
-        # collection.append(self.brush)
-        # return iter(list(*self.game_objs.values()))
 
     # def serialize(self, text: str):
     #     serialize_obj = {"max_x": self.width, "max_y": self.height}

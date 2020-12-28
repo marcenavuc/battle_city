@@ -13,7 +13,6 @@ class Bonus(GameObject):
 
     def update(self, event: pygame.event, level, *args):
         if self.is_collide(self, level.player):
-        # if self.rect.colliderect(level.player.rect):
             self.modify_player(level.player, level)
             level.bonuses.remove(self)
 

@@ -24,18 +24,10 @@ class Missile(Movable):
 
     def update(self, event: pygame.event, level, *args):
         position = self.move(self.direction)
-        # wall_index = new_position.collidelist(level["WALL"].sprites())
-        # wall_index = self.is_collidelist(position, level.)
-        # player = self.is_collide(position, level.player)
-
-        # iron_index = position.collidelist(level["IRON"].sprites())
-        # player_index = position.collidelist(level["PLAYER"].sprites())
         tank_index = self.is_collidelist(position, level.tanks)
         wall_index = self.is_collidelist(position, level.walls)
-        # center_index = position.collidelist(level["COMANDCENTER"].sprites())
         if position.colliderect(level.command_center.rect):
             level.command_center = None
-            # level["COMANDCENTER"].sprites()[center_index].kill()
             self.kill(level)
         elif position.colliderect(level.player.rect):
             if level.player.health > 0:
@@ -52,7 +44,6 @@ class Missile(Movable):
                 level.tanks.remove(tank)
             self.kill(level)
         elif wall_index >= 0:
-            # level["WALL"].sprites()[wall_index].kill()
             wall = level.walls[wall_index]
             if wall.health > 0:
                 wall.health -= 1

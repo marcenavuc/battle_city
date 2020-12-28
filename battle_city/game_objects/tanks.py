@@ -25,17 +25,12 @@ class Tank(Movable):
 
     def set_position(self, position: pygame.rect.Rect, level) \
             -> pygame.rect.Rect:
-        # if self.is_collide(position, )
         if self.is_collidelist(position, level.floor) >= 0:
-        # if position.collidelist(level.floor.sprites()) >= 0:
             self.speed = self.velocity / 2
         else:
             self.speed = self.velocity
         if (
             self.in_borders(position, level)
-            # and position.collidelist(level["WALL"].sprites()) < 0
-            # and position.collidelist(level["AQUA"].sprites()) < 0
-            # and position.collidelist(level["IRON"].sprites()) < 0
             and self.is_collidelist(position, level.blocks) < 0
         ):
             return position
@@ -45,7 +40,6 @@ class Tank(Movable):
         missile_position = self.move(self.direction, speed=20)
         if self.is_shot and missile_position.colliderect(missile_position):
             missile = Missile(missile_position, self.direction)
-            # level.groups["MISSILE"].add(missile)
             level.missiles.append(missile)
 
 
