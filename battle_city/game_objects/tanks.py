@@ -37,7 +37,7 @@ class Tank(Movable):
         return self.rect
 
     def shot(self, level):
-        missile_position = self.move(self.direction, speed=20)
+        missile_position = self.move(self.direction, speed=25)
         if self.is_shot and missile_position.colliderect(missile_position):
             missile = Missile(missile_position, self.direction)
             level.missiles.append(missile)
@@ -69,7 +69,6 @@ class EnemyTank(Tank):
         self.rect = self.set_position(new_position, level)
 
     def move_to_obj(self, obj: GameObject, level):
-        # obj = level[key].sprites()[0]
         direction = self.direction
         if self.rect.y + self.speed < obj.rect.y:
             direction = Directions.DOWN

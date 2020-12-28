@@ -40,15 +40,17 @@ class GameObject(DirtySprite):
 
     @staticmethod
     def is_collide(obj1: "GameObject", obj2: "GameObject"):
-        return obj1.rect.colliderect(obj2.rect)
+        if obj1 and obj2:
+            return obj1.rect.colliderect(obj2.rect)
 
     @staticmethod
     def is_collidelist(obj: Union["GameObject", pygame.rect.Rect],
                        objects: List["GameObject"]) -> int:
-        rects = [obj.rect for obj in objects]
-        if isinstance(obj, pygame.rect.Rect):
-            return obj.collidelist(rects)
-        return obj.rect.collidelist(rects)
+        if obj and objects:
+            rects = [obj.rect for obj in objects]
+            if isinstance(obj, pygame.rect.Rect):
+                return obj.collidelist(rects)
+            return obj.rect.collidelist(rects)
 
     @staticmethod
     def in_borders(position: pygame.rect.Rect, level) -> bool:

@@ -44,11 +44,14 @@ class Missile(Movable):
                 level.tanks.remove(tank)
             self.kill(level)
         elif wall_index >= 0:
+            logger.debug(f"Hitted in wall {wall_index}")
             wall = level.walls[wall_index]
             if wall.health > 0:
                 wall.health -= 1
             else:
+                logger.debug(f"Killing wall {wall_index}")
                 level.walls.remove(wall)
+                level.blocks.remove(wall)
             self.kill(level)
         elif not self.in_borders(position, level) \
                 or self.is_collidelist(position, level.blocks) >= 0:

@@ -13,13 +13,13 @@ GGGG....S.......II..GG..E.
 ..WWWWWWGGGGGGII....GGWW..
 ..WWWWWWGGGGGGII....GGWW..
 ......IIGGWW..WW..WW..WW..
-.B....IIGGWW..WW..WW..WW..
+.L....IIGGWW..WW..WW..WW..
 IIWW..II..WW..WW......WW..
 IIWW..II..WW..WW......WW..
 ..WW..WW..WWWWWW..WW..WW..
 ..WW..WW..WWWWWW..WW..WW..
 H.WW..WW..WWWWWW....S.....
-..WW..WW.......B..........
+..WW..WW.......L..........
 ..WW..............WW..WW..
 ..WW.....P.WWWW...WW..WW..
 ..WW..WW...WC.W...WWWWWW..

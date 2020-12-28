@@ -55,6 +55,7 @@ class LevelsRepository:
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
                 position = Vector(x * CELL_WIDTH, y * CELL_HEIGHT)
+                print(symbol)
                 game_obj = cls._get_from_symbol(symbol, position)
                 if game_obj is None:
                     continue
@@ -144,8 +145,8 @@ class Level:
 
     def __iter__(self) -> Iterator["GameObject"]:
         collection = []
-        for objs in [self.blocks, self.tanks, self.missiles, self.bonuses,
-                     self.floor, self.brush]:
+        for objs in [self.blocks, self.walls, self.tanks, self.missiles,
+                     self.bonuses, self.floor, self.brush]:
             collection.extend(objs)
         collection.append(self.player)
         collection.append(self.command_center)
