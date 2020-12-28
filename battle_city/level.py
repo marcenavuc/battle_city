@@ -20,6 +20,7 @@ class LevelsRepository:
         self.current_num_of_level = 0
         self.levels_dir = LEVELS_PATH
         self.latest_level = None
+        self.latest_save_path = None
 
         assert os.path.exists(self.levels_dir), "Path should exists"
         self.levels_paths = self._listdir_fullpath(self.levels_dir)
@@ -72,18 +73,44 @@ class LevelsRepository:
         return None if game_class == [] else GameObject.registry[
             game_class[0]](position)
 
-    def serialize(self):
+    def save_level(self):
         if self.latest_level:
             date = datetime.now().strftime('%d:%m:%y %H:%M')
             save_name = f"level:{self.current_num_of_level} {date}.json"
+            path = os.path.join("saves/", save_name)
+            self.latest_save_path = path
+
             level = self.latest_level
-            serialize_obj = {"width": level.width, "heigth": level.height}
-            for group_name, group in level.groups.items():
-                serialize_obj[group_name] = group.sprites()
-            with open(os.path.join("saves/", save_name), "w") as file:
+            serialize_obj = {name: [] for name in GameObject.registry.keys()}
+            serialize_obj["width"] = level.width
+            serialize_obj["height"] = level.height
+            for game_obj in level:
+                serialize_obj[game_obj.__class__.__name__].append(game_obj)
+            with open(path, "w") as file:
                 json.dump(serialize_obj, file,
                           default=lambda x: x.__dict__(), indent=4)
             logger.debug("Level was serialized")
+
+    def load_latest_save(self):
+        if self.latest_save_path is None:
+            return
+
+        logger.debug("Started unserialization")
+        with open(self.latest_save_path) as json_file:
+            serialize_obj = json.load(json_file)
+
+        width = serialize_obj["width"]
+        height = serialize_obj["height"]
+        objects = {}
+        for class_name, values in serialize_obj.items():
+            objects[class_name] = []
+            logger.debug(f"Started process group {class_name}")
+            for json_obj in values:
+                position = Vector(json_obj["x"], json_obj["y"])
+                direction = json_obj.get("direction")
+                game_obj = GameObject.registry[class_name](position, direction)
+                objects[class_name].append(game_obj)
+        self.latest_level = Level(objects, width, height)
 
 
 class Level:
@@ -123,44 +150,3 @@ class Level:
         collection.append(self.player)
         collection.append(self.command_center)
         return iter(collection)
-
-    # def serialize(self, text: str):
-    #     serialize_obj = {"max_x": self.width, "max_y": self.height}
-    #     for group_name, group in self.groups.items():
-    #         serialize_obj[group_name] = group.sprites()
-    #     with open(f"saves/{text}.txt", "w") as file:
-    #         json.dump(serialize_obj, file, default=lambda x: x.__dict__(),
-    #                   indent=4)
-    #     logger.debug("Level was serialized")
-
-    # @classmethod
-    # def unserialize(cls, file_path: str) -> "Level":
-    #     logger.debug("Started unserialization")
-    #     with open(file_path) as json_file:
-    #         serialize_obj = json.load(json_file)
-    #
-    #     width = serialize_obj["width"]
-    #     height = serialize_obj["height"]
-    #     groups = {}
-    #     for group_symbol, values in serialize_obj.items():
-    #         group = CharMapEnum.get_from_symbol(group_symbol)
-    #         if group:
-    #             groups[group.name] = Group()
-    #             objs = []
-    #             logger.debug(f"Started process group {group.name}")
-    #             for json_obj in values:
-    #                 game_obj = cls.get_object_from_json(json_obj, group.name)
-    #                 objs.append(game_obj)
-    #             groups[group.name].add(*objs)
-    #     return cls(groups, width, height)
-    #
-    # @staticmethod
-    # def get_object_from_json(json_obj: Dict, group_name: str):
-    #     cls = CharMapEnum[group_name].value
-    #     position = Vector(json_obj["x"], json_obj["y"])
-    #     if not issubclass(cls, GameObject):  # In case of WALLS
-    #         cls = Wall
-    #     if issubclass(cls, Missile):
-    #         logger.debug(f"Founded Missile on pos: {position}")
-    #         return cls(position, json_obj.get("direction"))
-    #     return cls(position)

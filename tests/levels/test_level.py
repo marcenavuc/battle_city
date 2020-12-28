@@ -34,7 +34,7 @@ def fake_file():
 
 
 def test_level_serialize(level, fake_file):
-    level.serialize("test")
+    level.save_level("test")
 
 
 @pytest.mark.parametrize("json_obj, group_name, result", [
@@ -47,6 +47,6 @@ def test_level_get_object_from_json(level, json_obj, group_name, result):
 
 
 def test_level_unserilize(level, fake_file):
-    level.serialize("test")
+    level.save_level("test")
     serialized_level = Level.unserialize("saves/test.txt")
     is_same_levels(level, serialized_level)

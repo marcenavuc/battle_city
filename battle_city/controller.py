@@ -50,9 +50,9 @@ class Controller:
             if state == GameStates.RELOAD_LEVEL:
                 self.levels_repository.reload(self.current_level)
             if state == GameStates.SAVE_LEVEL:
-                self.levels_repository.serialize()
+                self.levels_repository.save_level()
             if state == GameStates.LOAD_SAVE:
-                self.levels_repository.unserialize()
+                self.levels_repository.load_latest_save()
             return GameStates.GAME, level
         return state, level
 

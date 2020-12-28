@@ -33,7 +33,6 @@ class View:
         logger.debug("Initialized clock")
 
     def show(self, state: GameStates, level):
-        result_state = state
         if state == GameStates.GAME:
             self.menu_music.set_volume(0)
             self.game_music.set_volume(1)
@@ -43,20 +42,20 @@ class View:
             self.game_music.set_volume(0)
             is_game, is_save = self.display.main_screen()
             if is_game:
-                result_state = GameStates.GAME
+                return GameStates.GAME
             if is_save:
-                result_state = GameStates.LOAD_SAVE
+                return GameStates.LOAD_SAVE
         if state == GameStates.DIE:
             is_start, is_game = self.display.die_screen()
             if is_game:
-                result_state = GameStates.RELOAD_LEVEL
+                return GameStates.RELOAD_LEVEL
             if is_start:
-                result_state = GameStates.START
+                return GameStates.START
         if state == GameStates.PAUSE:
             is_save = self.display.pause_screen()
             if is_save:
-                result_state = GameStates.SAVE_LEVEL
+                return GameStates.SAVE_LEVEL
 
         pygame.display.update()
         self.clock.tick(FPS)
-        return result_state
+        return state
