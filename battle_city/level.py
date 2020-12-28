@@ -55,7 +55,6 @@ class LevelsRepository:
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
                 position = Vector(x * CELL_WIDTH, y * CELL_HEIGHT)
-                print(symbol)
                 game_obj = cls._get_from_symbol(symbol, position)
                 if game_obj is None:
                     continue

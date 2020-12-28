@@ -7,22 +7,10 @@ from battle_city.level import LevelsRepository
 from battle_city.utils import Vector
 
 
-@pytest.mark.parametrize("path, result", [
-    ("battle_city/media/levels", ['battle_city/media/levels/level3.txt']),
-    ("some incorrect path", [])
-])
-def test_level_repository_init(path, result):
-    try:
-        levels_repository = LevelsRepository(path)
-        assert levels_repository.levels_paths == result
-    except Exception as e:
-        assert isinstance(e, AssertionError)
-
-
 @pytest.mark.parametrize("symbol, result", [
     (".", None),
     ("I", Iron),
-    ("L", GreenBrush),
+    ("G", GreenBrush),
     ("A", Aqua),
     ("C", CENTER),
     ("T", Tank),
@@ -39,11 +27,6 @@ def test_level_repository_get_from_symbol(symbol, result):
         assert isinstance(obj, result)
 
 
-@pytest.fixture()
-def levels_rep():
-    return LevelsRepository("battle_city/media/levels")
-
-
 @pytest.mark.parametrize("level_num", [
     0,
     1,
@@ -56,3 +39,13 @@ def test_level_repository_load_level(levels_rep, level_num):
         assert level is not None
     except IndexError as e:
         assert level_num != 0
+
+
+def test_level_serialize():
+    LevelsRepository().save_level()
+
+
+# def test_level_unserilize(level, fake_file):
+#     level.save_level("test")
+#     serialized_level = Level.unserialize("saves/test.txt")
+#     is_same_levels(level, serialized_level)

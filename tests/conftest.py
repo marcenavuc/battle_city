@@ -11,14 +11,19 @@ def set_pygame():
 
 
 @pytest.fixture()
+def levels_rep():
+    return LevelsRepository()
+
+
+@pytest.fixture()
 def level():
     lines = [
-        "....",
-        ".T..",
+        "...P",
+        ".T.C",
         "....",
         "...I",
     ]
-    return Level(*LevelsRepository._parse_to_map(lines))
+    return LevelsRepository._parse_level(lines)
 
 
 def is_same_levels(level1, level2):
