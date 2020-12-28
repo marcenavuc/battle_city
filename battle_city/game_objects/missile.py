@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Missile(Movable):
-    image = "battle_city/media/images/missile.png"
+    image = "media/images/missile.png"
 
     def __init__(self, position, direction: Directions, *args, **kwargs):
         super().__init__(position, *args, **kwargs)
@@ -23,33 +23,41 @@ class Missile(Movable):
         )
 
     def update(self, event: pygame.event, level, *args):
-        new_position = self.move(self.direction)
-        wall_index = new_position.collidelist(level["WALL"].sprites())
-        iron_index = new_position.collidelist(level["IRON"].sprites())
-        player_index = new_position.collidelist(level["PLAYER"].sprites())
-        tank_index = new_position.collidelist(level["TANKS"].sprites())
-        center_index = new_position.collidelist(level["COMANDCENTER"].sprites())
-        if center_index >= 0:
-            level["COMANDCENTER"].sprites()[center_index].kill()
-            self.kill()
-        elif player_index >= 0:
-            player = level["PLAYER"].sprites()[player_index]
-            if player.health > 0:
-                player.health -= 1
+        position = self.move(self.direction)
+        tank_index = self.is_collidelist(position, level.tanks)
+        wall_index = self.is_collidelist(position, level.walls)
+        if position.colliderect(level.command_center.rect):
+            level.command_center = None
+            self.kill(level)
+        elif position.colliderect(level.player.rect):
+            if level.player.health > 0:
+                level.player.health -= 1
             else:
-                player.kill()
-            self.kill()
+                logger.debug("Player killed")
+                level.player = None
+            self.kill(level)
         elif tank_index >= 0:
-            tank = level["TANKS"].sprites()[tank_index]
+            tank = level.tanks[tank_index]
             if tank.health > 0:
                 tank.health -= 1
             else:
-                tank.kill()
-            self.kill()
+                level.tanks.remove(tank)
+            self.kill(level)
         elif wall_index >= 0:
-            level["WALL"].sprites()[wall_index].kill()
-            self.kill()
-        elif not self.in_borders(new_position, level) or iron_index != -1:
-            self.kill()
+            logger.debug(f"Hitted in wall {wall_index}")
+            wall = level.walls[wall_index]
+            if wall.health > 0:
+                wall.health -= 1
+            else:
+                logger.debug(f"Killing wall {wall_index}")
+                level.walls.remove(wall)
+                level.blocks.remove(wall)
+            self.kill(level)
+        elif not self.in_borders(position, level) \
+                or self.is_collidelist(position, level.blocks) >= 0:
+            self.kill(level)
         else:
-            self.rect = new_position
+            self.rect = position
+
+    def kill(self, level):
+        level.missiles.remove(self)

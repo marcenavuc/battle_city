@@ -1,62 +1,29 @@
 import json
 import logging
 import os
-from enum import Enum
-from typing import Dict, List, Tuple
+from datetime import datetime
+from typing import Dict, List, Iterator
 
-from pygame.sprite import Group
-
-from battle_city.config import CELL_HEIGHT, CELL_WIDTH
+from battle_city.config import CELL_HEIGHT, CELL_WIDTH, LEVELS_PATH
 from battle_city.game_objects import GameObject, Missile, Player
-from battle_city.game_objects.blocks import (Base, Iron, Leaves, Wall, Walls,
-                                             Water, Floor)
-from battle_city.game_objects.bonuses import (HealthBonus, RandomKill,
-                                              SpeedBonus)
-from battle_city.game_objects.tanks import (EnemyTank, HeavyTank, RushTank,
-                                            SpeedTank)
+from battle_city.game_objects.blocks import (CENTER, GreenBrush, Wall,
+                                             Floor, Block)
+from battle_city.game_objects.bonuses import Bonus
+from battle_city.game_objects.tanks import EnemyTank
 from battle_city.utils import Vector
 
 logger = logging.getLogger(__name__)
 
 
-class CharMapEnum(Enum):
-    WALL = Walls
-    AQUA = Water
-    IRON = Iron
-    FLOOR = Floor
-    COMANDCENTER = Base
-    PLAYER = Player
-    TANK = EnemyTank
-    SPEEDTANK = SpeedTank
-    HEAVYTANK = HeavyTank
-    RUSHTANK = RushTank
-    MISSILE = Missile
-    BONUS = HealthBonus
-    VELOCITYBONUS = SpeedBonus
-    KILLBONUS = RandomKill
-    LEAVES = Leaves
-
-    @staticmethod
-    def get_from_symbol(symbol: str):
-        for item in CharMapEnum:
-            if item.name[0] == symbol:
-                return item.value
-
-    @staticmethod
-    def find_name_by_symbol(symbol: str):
-        for item in CharMapEnum:
-            if item.name[0] == symbol:
-                return item.name
-
-
 class LevelsRepository:
-    def __init__(self, levels_dir: str):
+    def __init__(self):
         self.current_num_of_level = 0
-        self.levels_dir = levels_dir
+        self.levels_dir = LEVELS_PATH
         self.latest_level = None
+        self.latest_save_path = None
 
-        assert os.path.exists(levels_dir), "Path should exists"
-        self.levels_paths = self._listdir_fullpath(levels_dir)
+        assert os.path.exists(self.levels_dir), "Path should exists"
+        self.levels_paths = self._listdir_fullpath(self.levels_dir)
         logger.debug("LevelsRepository was created")
 
     def __len__(self) -> int:
@@ -69,103 +36,118 @@ class LevelsRepository:
 
         return self.latest_level
 
-    def load_level(self, num: int) -> "Level":
-        path = self.levels_paths[num]
+    def load_level(self, index: int) -> "Level":
+        path = self.levels_paths[index]
         with open(path) as file:
             lines = file.readlines()
 
-        logger.debug(f"loaded level {num}")
-        return Level(*self._parse_to_map(lines))
+        logger.debug(f"loaded level {index}")
+        return self._parse_level(lines)
 
-    def refresh(self, current_level: int):
+    def reload(self, index: int):
+        logger.debug(f"reloading level {index}")
         if self.latest_level is not None:
-            self.latest_level = self.load_level(current_level)
+            self.latest_level = self.load_level(index)
 
-    @staticmethod
-    def _parse_to_map(lines: List[str]) -> Tuple[dict, int, int]:
-        groups = {group_type.name: Group() for group_type in CharMapEnum}
+    @classmethod
+    def _parse_level(cls, lines: List[str]) -> "Level":
+        objects = {name: [] for name in GameObject.registry.keys()}
         for y, line in enumerate(lines):
             for x, symbol in enumerate(line.strip()):
                 position = Vector(x * CELL_WIDTH, y * CELL_HEIGHT)
-                game_obj = LevelsRepository._get_from_symbol(symbol, position)
+                print(symbol)
+                game_obj = cls._get_from_symbol(symbol, position)
                 if game_obj is None:
                     continue
-                groups[CharMapEnum.find_name_by_symbol(symbol)].add(game_obj)
+                objects[game_obj.__class__.__name__].append(game_obj)
 
-        return groups, x, y
+        return Level(objects, x * CELL_WIDTH, y * CELL_HEIGHT)
 
     @staticmethod
     def _listdir_fullpath(path: str) -> list:
         return sorted([os.path.join(path, file) for file in os.listdir(path)])
 
     @staticmethod
-    def _get_from_symbol(key: str, position: Vector) -> GameObject:
-        obj = CharMapEnum.get_from_symbol(key)
-        return None if obj is None else obj(position)
+    def _get_from_symbol(symbol: str, position: Vector) -> GameObject:
+        game_class = list(filter(lambda name: name.startswith(symbol),
+                                 GameObject.registry.keys()))
+        return None if game_class == [] else GameObject.registry[
+            game_class[0]](position)
+
+    def save_level(self):
+        if self.latest_level:
+            date = datetime.now().strftime('%d:%m:%y %H:%M')
+            save_name = f"level:{self.current_num_of_level} {date}.json"
+            path = os.path.join("saves/", save_name)
+            self.latest_save_path = path
+
+            level = self.latest_level
+            serialize_obj = {name: [] for name in GameObject.registry.keys()}
+            serialize_obj["width"] = level.width
+            serialize_obj["height"] = level.height
+            for game_obj in level:
+                serialize_obj[game_obj.__class__.__name__].append(game_obj)
+            with open(path, "w") as file:
+                json.dump(serialize_obj, file,
+                          default=lambda x: x.__dict__(), indent=4)
+            logger.debug("Level was serialized")
+
+    def load_latest_save(self):
+        if self.latest_save_path is None:
+            return
+
+        logger.debug("Started unserialization")
+        with open(self.latest_save_path) as json_file:
+            serialize_obj = json.load(json_file)
+
+        width = serialize_obj["width"]
+        height = serialize_obj["height"]
+        objects = {}
+        for class_name, values in serialize_obj.items():
+            objects[class_name] = []
+            logger.debug(f"Started process group {class_name}")
+            for json_obj in values:
+                position = Vector(json_obj["x"], json_obj["y"])
+                direction = json_obj.get("direction")
+                game_obj = GameObject.registry[class_name](position, direction)
+                objects[class_name].append(game_obj)
+        self.latest_level = Level(objects, width, height)
 
 
 class Level:
-    def __init__(self, groups: Dict[str, Group], max_x: int, max_y: int):
-        self.groups = groups
-        self.max_x = max_x * CELL_WIDTH
-        self.max_y = max_y * CELL_HEIGHT
+    def __init__(self, game_objs: Dict[str, List["GameObject"]],
+                 width: int, height: int):
+        self.game_objs = game_objs
+        self.width = width
+        self.height = height
+        # GameObjects
 
-        self.groups["TANKS"] = Group()
-        for tank_type in ["TANK", "SPEEDTANK", "HEAVYTANK", "RUSHTANK"]:
-            self.groups["TANKS"].add(self.groups[tank_type].sprites())
-            self.groups[tank_type].empty()
+        self.tanks = game_objs[EnemyTank.__name__]
+        for tank_cls in EnemyTank.__subclasses__():
+            self.tanks.extend(game_objs[tank_cls.__name__])
 
-        self.groups["BONUSES"] = Group()
-        for tank_type in ["BONUS", "VELOCITYBONUS", "KILLBONUS"]:
-            self.groups["BONUSES"].add(self.groups[tank_type].sprites())
+        self.blocks = []
+        for block_cls in Block.__subclasses__():
+            self.blocks.extend(game_objs[block_cls.__name__])
 
-        leaves_group = self.groups.pop("LEAVES", Group())
-        self.groups["LEAVES"] = leaves_group
+        self.bonuses = []
+        for bonus_cls in Bonus.__subclasses__():
+            self.bonuses.extend(game_objs[bonus_cls.__name__])
+
+        self.floor = game_objs[Floor.__name__]
+        self.player = game_objs[Player.__name__][0]
+        self.command_center = game_objs[CENTER.__name__][0]
+        self.missiles = game_objs[Missile.__name__]
+        self.walls = game_objs[Wall.__name__]
+        self.brush = game_objs[GreenBrush.__name__]
         logger.debug("Level was created")
-        logger.debug(self.groups)
+        logger.debug(f"Loaded this objects {self.game_objs}")
 
-    def __getitem__(self, group_name: str) -> Group:
-        return self.groups.get(group_name)
-
-    def __iter__(self) -> List[Group]:
-        return iter(self.groups.values())
-
-    def serialize(self, text: str):
-        serialize_obj = {"max_x": self.max_x, "max_y": self.max_y}
-        for group_name, group in self.groups.items():
-            serialize_obj[group_name[0]] = group.sprites()
-        with open(f"saves/{text}.txt", "w") as file:
-            json.dump(serialize_obj, file, default=lambda x: x.__dict__(), indent=4)
-        logger.debug("Level was serialized")
-
-    @staticmethod
-    def unserialize(file_path: str) -> "Level":
-        logger.debug("Started unserialization")
-        with open(file_path) as json_file:
-            serialize_obj = json.load(json_file)
-
-        max_x = serialize_obj["max_x"]
-        max_y = serialize_obj["max_y"]
-        groups = {}
-        for group_symbol, values in serialize_obj.items():
-            group_name = CharMapEnum.find_name_by_symbol(group_symbol)
-            if group_name:
-                groups[group_name] = Group()
-                objs = []
-                logger.debug(f"Started process group {group_name}")
-                for json_obj in values:
-                    game_obj = Level.get_object_from_json(json_obj, group_name)
-                    objs.append(game_obj)
-                groups[group_name].add(*objs)
-        return Level(groups, max_x, max_y)
-
-    @staticmethod
-    def get_object_from_json(json_obj: Dict, group_name: str):
-        cls = CharMapEnum[group_name].value
-        position = Vector(json_obj["x"], json_obj["y"])
-        if not issubclass(cls, GameObject):  # In case of WALLS
-            cls = Wall
-        if issubclass(cls, Missile):
-            logger.debug(f"Founded Missile on pos: {position}")
-            return cls(position, json_obj.get("direction"))
-        return cls(position)
+    def __iter__(self) -> Iterator["GameObject"]:
+        collection = []
+        for objs in [self.blocks, self.walls, self.tanks, self.missiles,
+                     self.bonuses, self.floor, self.brush]:
+            collection.extend(objs)
+        collection.append(self.player)
+        collection.append(self.command_center)
+        return iter(collection)

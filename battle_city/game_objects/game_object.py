@@ -1,5 +1,6 @@
 import random
 from enum import Enum
+from typing import Dict, Type, Union, List
 
 import pygame
 from pygame.sprite import DirtySprite
@@ -9,6 +10,12 @@ from battle_city.utils import Vector
 
 
 class GameObject(DirtySprite):
+    registry: Dict[str, Type['GameObject']] = {}
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__()
+        cls.registry[cls.__name__] = cls
+
     def __new__(cls, position: Vector, *groups):
         assert hasattr(cls, "image"), "You need to specify image on class"
         new_object = object.__new__(cls)
@@ -28,15 +35,26 @@ class GameObject(DirtySprite):
     def __dict__(self):
         return {"x": self.rect.x, "y": self.rect.y}
 
-    def __str__(self):
-        return self.__dict__()
-
     def update(self, event: pygame.event, level, *args):
         pass
 
     @staticmethod
+    def is_collide(obj1: "GameObject", obj2: "GameObject"):
+        if obj1 and obj2:
+            return obj1.rect.colliderect(obj2.rect)
+
+    @staticmethod
+    def is_collidelist(obj: Union["GameObject", pygame.rect.Rect],
+                       objects: List["GameObject"]) -> int:
+        if obj and objects:
+            rects = [obj.rect for obj in objects]
+            if isinstance(obj, pygame.rect.Rect):
+                return obj.collidelist(rects)
+            return obj.rect.collidelist(rects)
+
+    @staticmethod
     def in_borders(position: pygame.rect.Rect, level) -> bool:
-        return 0 <= position.x <= level.max_x and 0 <= position.y <= level.max_y
+        return 0 <= position.x <= level.width and 0 <= position.y <= level.height
 
 
 class Directions(Enum):
