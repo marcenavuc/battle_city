@@ -38,3 +38,10 @@ class Player(Tank):
                 if direction:
                     new_position = self.move(direction)
                     self.rect = self.set_position(new_position, level)
+
+    def set_position(self, position: pygame.rect.Rect, level) \
+            -> pygame.rect.Rect:
+        new_position = super().set_position(position, level)
+        if self.is_collidelist(new_position, level.tanks) >= 0:
+            level.player = None
+        return new_position
