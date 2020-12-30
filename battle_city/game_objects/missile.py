@@ -51,7 +51,6 @@ class Missile(Movable):
             else:
                 logger.debug(f"Killing wall {wall_index}")
                 level.walls.remove(wall)
-                level.blocks.remove(wall)
             self.kill(level)
         elif not self.in_borders(position, level) \
                 or self.is_collidelist(position, level.blocks) >= 0:

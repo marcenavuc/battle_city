@@ -31,6 +31,7 @@ class Tank(Movable):
             self.speed = self.velocity
         if (
             self.in_borders(position, level)
+            and self.is_collidelist(position, level.walls) < 0
             and self.is_collidelist(position, level.blocks) < 0
         ):
             return position
