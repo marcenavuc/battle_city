@@ -37,7 +37,7 @@ class View:
             self.menu_music.set_volume(0)
             self.game_music.set_volume(1)
             self.display.game_screen(level)
-        if state == GameStates.START:
+        elif state == GameStates.START:
             self.menu_music.set_volume(1)
             self.game_music.set_volume(0)
             is_game, is_save = self.display.main_screen()
@@ -45,13 +45,13 @@ class View:
                 return GameStates.GAME
             if is_save:
                 return GameStates.LOAD_SAVE
-        if state == GameStates.DIE:
+        elif state == GameStates.DIE:
             is_start, is_game = self.display.die_screen()
             if is_game:
                 return GameStates.RELOAD_LEVEL
             if is_start:
                 return GameStates.START
-        if state == GameStates.PAUSE:
+        elif state == GameStates.PAUSE:
             is_save = self.display.pause_screen()
             if is_save:
                 return GameStates.SAVE_LEVEL

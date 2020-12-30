@@ -55,7 +55,7 @@ class GameObject(DirtySprite):
             if isinstance(obj, pygame.rect.Rect):
                 return obj.collidelist(rects)
             return obj.rect.collidelist(rects)
-        return False
+        return -1
 
     @staticmethod
     def in_borders(position: pygame.rect.Rect, level) -> bool:

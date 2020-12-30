@@ -17,7 +17,8 @@ def test_vector_init(x, y, result):
 
 @pytest.mark.parametrize("first, second, result", [
     (Vector(0, 10), 20, Vector(20, 30)),
-    (Vector(5.5, 2.5), 0.5, Vector(6, 3))
+    (Vector(5.5, 2.5), 0.5, Vector(6, 3)),
+    (Vector(5.5, 2.5), Vector(5.5, 2.5), Vector(11, 5))
 ])
 def test_vector_sum(first, second, result):
     assert first + second == result

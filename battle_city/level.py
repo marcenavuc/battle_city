@@ -50,6 +50,7 @@ class LevelsRepository:
         logger.debug(f"reloading level {index}")
         if self.latest_level is not None:
             self.latest_level = self.load_level(index)
+            self.current_num_of_level = index
 
     @classmethod
     def _parse_level(cls, lines: List[str]) -> "Level":
@@ -61,9 +62,6 @@ class LevelsRepository:
                 if game_obj is None:
                     continue
                 objects[game_obj.__class__.__name__].append(game_obj)
-
-        # return Level(x * CELL_WIDTH, y * CELL_HEIGHT,
-        #              **cls.objects_to_args(objects))
         return cls.create_level(x * CELL_WIDTH, y * CELL_HEIGHT, objects)
 
     @staticmethod
@@ -107,6 +105,8 @@ class LevelsRepository:
         if self.latest_level:
             date = datetime.now().strftime('%d:%m:%y %H:%M')
             save_name = f"level:{self.current_num_of_level} {date}.json"
+            if not os.path.exists("saves/"):
+                os.mkdir("saves/")
             path = os.path.join("saves/", save_name)
             self.latest_save_path = path
 
@@ -129,8 +129,8 @@ class LevelsRepository:
         with open(self.latest_save_path) as json_file:
             serialize_obj = json.load(json_file)
 
-        width = serialize_obj["width"]
-        height = serialize_obj["height"]
+        width = serialize_obj.pop("width")
+        height = serialize_obj.pop("height")
         objects = {}
         for class_name, values in serialize_obj.items():
             objects[class_name] = []
@@ -138,7 +138,10 @@ class LevelsRepository:
             for json_obj in values:
                 position = Vector(json_obj["x"], json_obj["y"])
                 direction = json_obj.get("direction")
-                game_obj = GameObject.registry[class_name](position, direction)
+                if direction:
+                    game_obj = GameObject.registry[class_name](position, direction)
+                else:
+                    game_obj = GameObject.registry[class_name](position)
                 objects[class_name].append(game_obj)
         self.latest_level = self.create_level(width,
                                          height, objects)

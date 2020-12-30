@@ -36,21 +36,21 @@ class Controller:
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return self.switch_pause(state), level
-
         if state == GameStates.START:
             self.current_level = 0
             return GameStates.START, level
-        if state == GameStates.GAME:
+        elif state == GameStates.GAME:
             new_state = self.play_game(level)
             if new_state is not None:
                 return new_state
-        else:
-            if state == GameStates.RELOAD_LEVEL:
-                self.levels_repository.reload(self.current_level)
-            if state == GameStates.SAVE_LEVEL:
-                self.levels_repository.save_level()
-            if state == GameStates.LOAD_SAVE:
-                self.levels_repository.load_latest_save()
+        elif state == GameStates.RELOAD_LEVEL:
+            self.levels_repository.reload(self.current_level)
+            return GameStates.GAME, level
+        elif state == GameStates.SAVE_LEVEL:
+            self.levels_repository.save_level()
+            return GameStates.GAME, level
+        elif state == GameStates.LOAD_SAVE:
+            self.levels_repository.load_latest_save()
             return GameStates.GAME, level
         return state, level
 

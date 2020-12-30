@@ -5,6 +5,7 @@ from battle_city.game_objects.blocks import Iron, GreenBrush, Aqua, Center
 from battle_city.game_objects.tanks import Tank
 from battle_city.level import LevelsRepository
 from battle_city.utils import Vector
+from tests.conftest import is_same_levels
 
 
 @pytest.mark.parametrize("symbol, result", [
@@ -41,11 +42,14 @@ def test_level_repository_load_level(levels_rep, level_num):
         assert level_num != 0
 
 
-def test_level_serialize():
-    LevelsRepository().save_level()
+def test_level_serialize(level):
+    level_rep = LevelsRepository()
+    level_rep.latest_level = level
+    level_rep.save_level()
 
 
-# def test_level_unserilize(level, fake_file):
-#     level.save_level("test")
-#     serialized_level = Level.unserialize("saves/test.txt")
-#     is_same_levels(level, serialized_level)
+def test_level_unserilize(level):
+    level_rep = LevelsRepository()
+    level_rep.latest_save_path = "tests/save.json"
+    level_rep.load_latest_save()
+    assert is_same_levels(level, level_rep.latest_level)

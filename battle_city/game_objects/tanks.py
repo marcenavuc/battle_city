@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Tank(Movable):
     image = "media/images/tank.png"
 
-    def __init__(self, position, *args, **kwars):
+    def __init__(self, position, direction=Directions.UP, *args, **kwars):
         super().__init__(position, *args, **kwars)
         self.velocity = 5
         self.health = 1
@@ -81,6 +81,7 @@ class EnemyTank(Tank):
             direction = Directions.LEFT
 
         new_position = self.move(direction)
+        print(self.rect, new_position)
         new_rect = self.set_position(new_position, level)
         if self.rect == new_rect:
             logger.debug("Didn't found the way")

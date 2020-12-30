@@ -1,0 +1,45 @@
+{
+    "Movable": [],
+    "Missile": [],
+    "Tank": [
+        {
+            "x": 26,
+            "y": 26,
+            "direction": "UP"
+        }
+    ],
+    "EnemyTank": [],
+    "SpeedTank": [],
+    "HeavyTank": [],
+    "RushTank": [],
+    "Player": [
+        {
+            "x": 78,
+            "y": 0,
+            "direction": "UP"
+        }
+    ],
+    "Block": [],
+    "Wall": [],
+    "Aqua": [],
+    "Iron": [
+        {
+            "x": 78,
+            "y": 78
+        }
+    ],
+    "Center": [
+        {
+            "x": 78,
+            "y": 26
+        }
+    ],
+    "GreenBrush": [],
+    "Floor": [],
+    "Bonus": [],
+    "LifeBonus": [],
+    "SpeedBonus": [],
+    "RandomKillBonus": [],
+    "width": 78,
+    "height": 78
+}
