@@ -9,4 +9,3 @@ def test_level_initialization():
 def test_level_iter(level):
     iter(level)
     assert True
-
