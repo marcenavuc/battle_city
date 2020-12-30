@@ -29,4 +29,3 @@ def test_button_is_clicked(set_pygame, mocker,
     mocker.patch("pygame.mouse.get_pressed", return_value=clicked)
     button = Button((0, 0, 10, 10))  # Здесь координаты не имеют значения
     assert button.is_clicked() is result
-

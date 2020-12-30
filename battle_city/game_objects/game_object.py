@@ -21,7 +21,8 @@ class GameObject(DirtySprite):
         new_object = object.__new__(cls)
         if isinstance(new_object, cls):
             new_object.sprite = pygame.image.load(cls.image)
-            new_object.sprite = pygame.transform.scale(new_object.sprite, CELL_SIZE)
+            new_object.sprite = pygame.transform.scale(new_object.sprite,
+                                                       CELL_SIZE)
             new_object.image = pygame.transform.rotate(new_object.sprite, 0)
             new_object.rect = new_object.image.get_rect()
             new_object.rect.x, new_object.rect.y = position.x, position.y
@@ -59,7 +60,8 @@ class GameObject(DirtySprite):
 
     @staticmethod
     def in_borders(position: pygame.rect.Rect, level) -> bool:
-        return 0 <= position.x <= level.width and 0 <= position.y <= level.height
+        return 0 <= position.x <= level.width \
+               and 0 <= position.y <= level.height
 
 
 class Directions(Enum):

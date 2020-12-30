@@ -25,6 +25,7 @@ def test_player_on_event(event):
     level.player.update(event, level)
     assert 0 != level.player.rect.x or 0 != level.player.rect.y
 
+
 @pytest.mark.parametrize("bonus", [
     LifeBonus, SpeedBonus
 ])

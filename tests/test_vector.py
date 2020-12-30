@@ -30,4 +30,3 @@ def test_vector_sum(first, second, result):
 ])
 def test_vector_mul(first, second, result):
     assert first * second == result
-

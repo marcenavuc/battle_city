@@ -6,7 +6,8 @@ import pygame
 
 from battle_city.config import RESPAWN_TIME
 from battle_city.game_objects import Missile
-from battle_city.game_objects.game_object import Directions, Movable, GameObject
+from battle_city.game_objects.game_object import Directions, Movable,\
+    GameObject
 
 logger = logging.getLogger(__name__)
 

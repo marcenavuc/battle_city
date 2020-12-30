@@ -13,7 +13,8 @@ class Missile(Movable):
     def __init__(self, position, direction: Directions, *args, **kwargs):
         super().__init__(position, *args, **kwargs)
         self.direction = direction
-        self.image = pygame.transform.rotate(self.sprite, direction.get_angle())
+        self.image = pygame.transform.rotate(self.sprite,
+                                             direction.get_angle())
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position.x, position.y
         self.speed = 15

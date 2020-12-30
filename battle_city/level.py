@@ -139,12 +139,12 @@ class LevelsRepository:
                 position = Vector(json_obj["x"], json_obj["y"])
                 direction = json_obj.get("direction")
                 if direction:
-                    game_obj = GameObject.registry[class_name](position, direction)
+                    game_obj = GameObject.registry[class_name](position,
+                                                               direction)
                 else:
                     game_obj = GameObject.registry[class_name](position)
                 objects[class_name].append(game_obj)
-        self.latest_level = self.create_level(width,
-                                         height, objects)
+        self.latest_level = self.create_level(width, height, objects)
 
 
 @dataclass(init=True, repr=True)

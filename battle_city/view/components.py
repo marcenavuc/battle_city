@@ -50,7 +50,6 @@ class Display:
     def _draw_gameobject(self, game_obj: "GameObject"):
         self.screen.blit(game_obj.image, game_obj.rect)
 
-
     def main_screen(self):
         self.screen.fill(pygame.Color("black"))
 
