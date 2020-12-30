@@ -4,9 +4,11 @@ import os
 from datetime import datetime
 from typing import Dict, List, Iterator
 
+from dataclasses import dataclass, field
+
 from battle_city.config import CELL_HEIGHT, CELL_WIDTH, LEVELS_PATH
 from battle_city.game_objects import GameObject, Missile, Player
-from battle_city.game_objects.blocks import (CENTER, GreenBrush, Wall,
+from battle_city.game_objects.blocks import (Center, GreenBrush, Wall,
                                              Floor, Block)
 from battle_city.game_objects.bonuses import Bonus
 from battle_city.game_objects.tanks import EnemyTank
@@ -60,7 +62,9 @@ class LevelsRepository:
                     continue
                 objects[game_obj.__class__.__name__].append(game_obj)
 
-        return Level(objects, x * CELL_WIDTH, y * CELL_HEIGHT)
+        # return Level(x * CELL_WIDTH, y * CELL_HEIGHT,
+        #              **cls.objects_to_args(objects))
+        return cls.create_level(x * CELL_WIDTH, y * CELL_HEIGHT, objects)
 
     @staticmethod
     def _listdir_fullpath(path: str) -> list:
@@ -72,6 +76,54 @@ class LevelsRepository:
                                  GameObject.registry.keys()))
         return None if game_class == [] else GameObject.registry[
             game_class[0]](position)
+
+    # @staticmethod
+    # def objects_to_args(objects: Dict[str, List["GameObject"]]):
+    #     blocks: List[Block] = None,
+    #     bonuses: List[Bonus] = None,
+    #     floor: List[Floor] = None,
+    #     missiles: List[Missile] = None,
+    #     # walls: List[Wall] = None,
+    #     # brushes: List[GreenBrush] = None,
+    #     # player: Player = None,
+    #     # command_center: Center = None,
+    #     new_dict = {}
+    #     for key in objects.keys():
+    #         if key == Player.__class__.__name__:
+    #             new_dict["player"] = objects[key][0]
+    #         if key == Center.__class__.__name__:
+    #             new_dict["command_center"] = objects[key][0]
+    #         if key == Wall.__class__.__name__:
+    #             new_dict["walls"] = objects[key]
+    #         if key == GreenBrush.__class__.__name__:
+    #             new_dict["brushes"] = objects[key]
+    #         if key == Floor.__class__.__name__:
+
+    @staticmethod
+    def create_level(width: int, height: int,
+                     game_objs: Dict[str, List["GameObject"]]):
+        level = Level(width, height)
+        for key in game_objs:
+            if key == "Player":
+                level.player = game_objs[key][0]
+            elif key.endswith("Bonus"):
+                level.bonuses.extend(game_objs[key])
+            elif key == "Floor":
+                level.floor.extend(game_objs[key])
+            elif key == "Wall":
+                level.walls.extend(game_objs[key])
+            elif key == "GreenBrush":
+                level.brushes.extend(game_objs[key])
+            elif key == "Missile":
+                level.missiles.extend(game_objs[key])
+            elif key == "Center":
+                level.command_center = game_objs[key][0]
+            elif key.endswith("Tank"):
+                level.tanks.extend(game_objs[key])
+            else:
+                level.blocks.extend(game_objs[key])
+        print(level)
+        return level
 
     def save_level(self):
         if self.latest_level:
@@ -110,42 +162,77 @@ class LevelsRepository:
                 direction = json_obj.get("direction")
                 game_obj = GameObject.registry[class_name](position, direction)
                 objects[class_name].append(game_obj)
-        self.latest_level = Level(objects, width, height)
+        # self.latest_level = Level(width, height,
+        #                           **self.objects_to_args(objects))
+        self.latest_level = self.create_level(width,
+                                         height, objects)
 
 
+@dataclass(init=True, repr=True)
 class Level:
-    def __init__(self, game_objs: Dict[str, List["GameObject"]],
-                 width: int, height: int):
-        self.game_objs = game_objs
-        self.width = width
-        self.height = height
+    width: int
+    height: int
+    blocks: List[Block] = field(default_factory=list)
+    bonuses: List[Bonus] = field(default_factory=list)
+    floor: List[Floor] = field(default_factory=list)
+    missiles: List[Missile] = field(default_factory=list)
+    walls: List[Wall] = field(default_factory=list)
+    brushes: List[GreenBrush] = field(default_factory=list)
+    tanks: List[EnemyTank] = field(default_factory=list)
+    player: Player = None
+    command_center: Center = None
+
+    # def __init__(self, width: int, height: int,
+    #              tanks: List[EnemyTank] = None,
+    #              blocks: List[Block] = None,
+    #              bonuses: List[Bonus] = None,
+    #              floor: List[Floor] = None,
+    #              missiles: List[Missile] = None,
+    #              walls: List[Wall] = None,
+    #              brushs: List[GreenBrush] = None,
+    #              player: Player = None,
+    #              command_center: Center = None,
+    #              ):
+        # self.width = width
+        # self.height = height
+        # self.tanks = tanks
+        # self.blocks = blocks
+        # self.bonuses = bonuses
+        # self.floor = floor
+        # self.player = player
+        # self.command_center = command_center
+        # self.missiles = missiles
+        # self.walls = walls
+        # self.brushs = brushs
+        # def __init__(self, game_objs: Dict[str, List["GameObject"]],
+        #              width: int, height: int):
         # GameObjects
 
-        self.tanks = game_objs[EnemyTank.__name__]
-        for tank_cls in EnemyTank.__subclasses__():
-            self.tanks.extend(game_objs[tank_cls.__name__])
-
-        self.blocks = []
-        for block_cls in Block.__subclasses__():
-            self.blocks.extend(game_objs[block_cls.__name__])
-
-        self.bonuses = []
-        for bonus_cls in Bonus.__subclasses__():
-            self.bonuses.extend(game_objs[bonus_cls.__name__])
-
-        self.floor = game_objs[Floor.__name__]
-        self.player = game_objs[Player.__name__][0]
-        self.command_center = game_objs[CENTER.__name__][0]
-        self.missiles = game_objs[Missile.__name__]
-        self.walls = game_objs[Wall.__name__]
-        self.brush = game_objs[GreenBrush.__name__]
-        logger.debug("Level was created")
-        logger.debug(f"Loaded this objects {self.game_objs}")
+        # self.tanks = game_objs[EnemyTank.__name__]
+        # for tank_cls in EnemyTank.__subclasses__():
+        #     self.tanks.extend(game_objs[tank_cls.__name__])
+        #
+        # self.blocks = []
+        # for block_cls in Block.__subclasses__():
+        #     self.blocks.extend(game_objs[block_cls.__name__])
+        #
+        # self.bonuses = []
+        # for bonus_cls in Bonus.__subclasses__():
+        #     self.bonuses.extend(game_objs[bonus_cls.__name__])
+        #
+        # self.floor = game_objs[Floor.__name__]
+        # self.player = game_objs[Player.__name__][0]
+        # self.command_center = game_objs[Center.__name__][0]
+        # self.missiles = game_objs[Missile.__name__]
+        # self.walls = game_objs[Wall.__name__]
+        # self.brush = game_objs[GreenBrush.__name__]
+        # logger.debug("Level was created")
+        # logger.debug(f"Loaded this objects {self.game_objs}")
 
     def __iter__(self) -> Iterator["GameObject"]:
         collection = []
         for objs in [self.blocks, self.walls, self.tanks, self.missiles,
-                     self.bonuses, self.floor, self.brush]:
+                     self.bonuses, self.floor, self.brushes]:
             collection.extend(objs)
         collection.append(self.player)
         collection.append(self.command_center)

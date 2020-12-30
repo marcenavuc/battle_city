@@ -1,7 +1,7 @@
 import pytest
 
 from battle_city.game_objects import Player
-from battle_city.game_objects.blocks import Iron, GreenBrush, Aqua, CENTER
+from battle_city.game_objects.blocks import Iron, GreenBrush, Aqua, Center
 from battle_city.game_objects.tanks import Tank
 from battle_city.level import LevelsRepository
 from battle_city.utils import Vector
@@ -12,7 +12,7 @@ from battle_city.utils import Vector
     ("I", Iron),
     ("G", GreenBrush),
     ("A", Aqua),
-    ("C", CENTER),
+    ("C", Center),
     ("T", Tank),
     ("P", Player),
     ("Simple wrong symbol", None)

@@ -34,7 +34,7 @@ class SpeedBonus(Bonus):
         player.speed *= 2
 
 
-class RandomKill(Bonus):
+class RandomKillBonus(Bonus):
     image = "media/images/bonus_tank.png"
 
     def modify_player(self, player, level):

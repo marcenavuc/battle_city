@@ -21,7 +21,7 @@ class Iron(Block):
     image = "media/images/iron.png"
 
 
-class CENTER(Block):
+class Center(Block):
     image = "media/images/base.png"
 
 
